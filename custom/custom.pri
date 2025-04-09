@@ -25,6 +25,11 @@ CONFIG  += QGC_DISABLE_APM_MAVLINK
 CONFIG  += QGC_DISABLE_APM_PLUGIN QGC_DISABLE_APM_PLUGIN_FACTORY
 
 # Branding
+
+DEFINES += CUSTOMHEADER=\"\\\"CustomPlugin.h\\\"\"
+DEFINES += CUSTOMCLASS=CustomPlugin
+
+
 TARGET   = CustomQGroundControl
 DEFINES += QGC_APPLICATION_NAME='"\\\"Custom QGroundControl\\\""'
 
