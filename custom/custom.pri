@@ -50,3 +50,13 @@ RESOURCES += \
 
 QML_IMPORT_PATH += \
    $$PWD/res
+
+# Our own, custom sources
+SOURCES += \
+    $$PWD/src/CustomPlugin.cc \
+
+HEADERS += \
+    $$PWD/src/CustomPlugin.h \
+
+INCLUDEPATH += \
+    $$PWD/src \
