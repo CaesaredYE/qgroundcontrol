@@ -7,6 +7,12 @@ LABEL authors="Daniel Agar <daniel@agar.ca>, Patrick José Pereira <patrickelect
 
 ARG QT_VERSION=5.15.2
 
+ARG http_proxy=${http_proxy}
+ARG https_proxy=${https_proxy}
+
+ENV http_proxy=${http_proxy}
+ENV https_proxy=${https_proxy}
+
 ENV DEBIAN_FRONTEND noninteractive
 
 ENV DISPLAY :99
