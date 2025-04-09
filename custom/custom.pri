@@ -1,5 +1,3 @@
-message("Adding Custom Plugin")
-
 #-- Version control
 #   Major and minor versions are defined here (manually)
 
@@ -26,11 +24,7 @@ message(Custom QGC Version: $${CUSTOM_QGC_VERSION})
 CONFIG  += QGC_DISABLE_APM_MAVLINK
 CONFIG  += QGC_DISABLE_APM_PLUGIN QGC_DISABLE_APM_PLUGIN_FACTORY
 
-# We implement our own PX4 plugin factory
-CONFIG  += QGC_DISABLE_PX4_PLUGIN_FACTORY
-
 # Branding
-
 TARGET   = CustomQGroundControl
 DEFINES += QGC_APPLICATION_NAME='"\\\"Custom QGroundControl\\\""'
 
