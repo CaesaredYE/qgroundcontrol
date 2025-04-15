@@ -1,9 +1,9 @@
 [Desktop Entry]
 Type=Application
 Name=DropStrike
-GenericName=DropStrike
-Comment=ground control station
-Icon=CustomAppIcon
+GenericName=DropStrike Ground Control Station
+Comment=DropStrike Ground Control Station
+Icon=DropStrikeAppIcon
 Exec=qgroundcontrol-start.sh
 Terminal=false
 Categories=Utility;
