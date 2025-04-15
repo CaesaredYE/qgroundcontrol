@@ -3,6 +3,8 @@ CONFIG  += QGC_DISABLE_APM_MAVLINK
 CONFIG  += QGC_DISABLE_APM_PLUGIN 
 CONFIG  += QGC_DISABLE_APM_PLUGIN_FACTORY
 
+CONFIG  += installer
+
 DEFINES += CUSTOMHEADER=\"\\\"CustomPlugin.h\\\"\"
 DEFINES += CUSTOMCLASS=CustomPlugin
 
@@ -17,6 +19,12 @@ QGC_BINARY_NAME     = "DropStrike"
 QGC_ORG_NAME        = "polixir"
 QGC_ORG_DOMAIN      = "polixir.ai"
 QGC_APP_DESCRIPTION = "DropStrike Ground Control Station"
+
+RESOURCES += \
+    $$PWD/custom.qrc
+
+QML_IMPORT_PATH += \
+    $$PWD/res
 
 SOURCES += \
     $$PWD/src/CustomPlugin.cc \
