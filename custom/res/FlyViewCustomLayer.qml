@@ -54,16 +54,19 @@ Item {
 
     Rectangle {
         id:                         sendRect
-        anchors.bottom:             parent.bottom
+        anchors.bottom:             parent.bottom 
         anchors.right:              parent.right
-        anchors.bottomMargin:       _toolsMargin
+        anchors.bottomMargin:       _toolsMargin + parentToolInsets.bottomEdgeRightInset
         anchors.rightMargin:        _toolsMargin
+        width:                      column.width
+        height:                     column.height
         radius:                     2
-        color:                      qgcPal.windowShadeDark
+        color:                      qgcPal.window
 
         Column {
             id:                     column
-            anchors.margins:        _toolsMargin
+            padding:                _toolsMargin
+            spacing:                _toolsMargin
 
             QGCLabel {
                 text:                       "敌机坐标"
@@ -120,13 +123,22 @@ Item {
 
             Row {
                 spacing:                        ScreenTools.defaultFontPixelWidth
-
+                anchors.horizontalCenter:       parent.horizontalCenter
 
                 QGCButton {
                     id:                             sendPosition
                     text:                           qsTr("发送")
                     enabled:                        _activeVehicle
                     onClicked: {
+                         _activeVehicle.sendMavCommand(
+                            _vehicle.defaultComponentId(), 
+                            MAV_CMD_USER_1, 
+                            false,  
+                            1, 
+                            inputX.text, 
+                            inputY.text, 
+                            inputZ.text,
+                        )
                     }
                 }
            
@@ -135,12 +147,15 @@ Item {
                     text:                           qsTr("紧急停止")
                     enabled:                        _activeVehicle
                     onClicked: {
+                         _activeVehicle.sendMavCommand(
+                            _vehicle.defaultComponentId(), 
+                            MAV_CMD_USER_1, 
+                            false,
+                            0
+                        )
                     }
                 }
             }
-
-
-            
         }
     }
 }
