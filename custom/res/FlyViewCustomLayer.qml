@@ -54,30 +54,24 @@ Item {
 
     Rectangle {
         id:                         sendRect
-        anchors.top:                parent.top
-        anchors.topMargin:          parentToolInsets.topEdgeLeftInset + _toolsMargin
-        anchors.horizontalCenter:   parent.horizontalCenter
-        height:                     column.height * 1.5
-        width:                      column.width * 1.5
+        anchors.bottom:             parent.bottom
+        anchors.right:              parent.right
+        anchors.bottomMargin:       _toolsMargin
+        anchors.rightMargin:        _toolsMargin
         radius:                     2
         color:                      qgcPal.windowShadeDark
 
         Column {
             id:                     column
             anchors.margins:        _toolsMargin
-            anchors.centerIn:       parent
-            spacing:                ScreenTools.defaultFontPixelHeight * 0.25
 
             QGCLabel {
-                anchors.horizontalCenter:   parent.horizontalCenter
                 text:                       "敌机坐标"
                 font.bold:                  true
             }
 
             Row {
-                anchors.left:       parent.left
-                anchors.right:      parent.right
-                spacing:            ScreenTools.defaultFontPixelWidth * 0.25
+                spacing:                        ScreenTools.defaultFontPixelWidth
 
                 QGCLabel {
                     id:                         labelX
@@ -87,21 +81,66 @@ Item {
            
                 QGCTextField {
                     id:                         inputX
-                    width:                      parent.width - labelX.width  - parent.spacing
-                    height:                     labelX.implicitHeight * 1.5
-                    focus:                      true
+                    width:                      ScreenTools.defaultFontPixelHeight * 8
+                    height:                     labelX.height * 1.2
+                }
+            }
+
+            Row {
+                spacing:                        ScreenTools.defaultFontPixelWidth
+
+                QGCLabel {
+                    id:                         labelY
+                    anchors.verticalCenter:     inputY.verticalCenter
+                    text:                       qsTr("y")
+                }
+           
+                QGCTextField {
+                    id:                         inputY
+                    width:                      ScreenTools.defaultFontPixelHeight * 8
+                    height:                     labelY.height * 1.2
+                }
+            }
+
+            Row {
+                spacing:                        ScreenTools.defaultFontPixelWidth
+
+                QGCLabel {
+                    id:                         labelZ
+                    anchors.verticalCenter:     inputZ.verticalCenter
+                    text:                       qsTr("z")
+                }
+           
+                QGCTextField {
+                    id:                         inputZ
+                    width:                      ScreenTools.defaultFontPixelHeight * 8
+                    height:                     labelZ.height * 1.2
+                }
+            }
+
+            Row {
+                spacing:                        ScreenTools.defaultFontPixelWidth
+
+
+                QGCButton {
+                    id:                             sendPosition
+                    text:                           qsTr("发送")
+                    enabled:                        _activeVehicle
+                    onClicked: {
+                    }
+                }
+           
+                QGCButton {
+                    id:                             stop
+                    text:                           qsTr("紧急停止")
+                    enabled:                        _activeVehicle
+                    onClicked: {
+                    }
                 }
             }
 
 
-            QGCButton {
-                id:                             sendPosition
-                width:                          parent.width
-                text:                           qsTr("发送")
-                enabled:                        _activeVehicle
-                onClicked: {
-                }
-            }
+            
         }
     }
 }
