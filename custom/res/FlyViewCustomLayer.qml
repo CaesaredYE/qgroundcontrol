@@ -27,8 +27,6 @@ import QGroundControl.Palette       1.0
 import QGroundControl.ScreenTools   1.0
 import QGroundControl.Vehicle       1.0
 
-// To implement a custom overlay copy this code to your own control in your custom code source. Then override the
-// FlyViewCustomLayer.qml resource with your own qml. See the custom example and documentation for details.
 Item {
     id: _root
 
@@ -36,7 +34,8 @@ Item {
     property var totalToolInsets:   _toolInsets // These are the insets for your custom overlay additions
     property var mapControl
 
-    // since this file is a placeholder for the custom layer in a standard build, we will just pass through the parent insets
+    property var    _activeVehicle:         QGroundControl.multiVehicleManager.activeVehicle
+
     QGCToolInsets {
         id:                     _toolInsets
         leftEdgeTopInset:       parentToolInsets.leftEdgeTopInset
@@ -54,17 +53,55 @@ Item {
     }
 
     Rectangle {
-        id: exampleRectangle
-        visible: true // to see this example, set this to true. To view insets, enable the insets viewer FlyView.qml
-        anchors.left: parent.left
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.topMargin: parentToolInsets.topEdgeLeftInset + _toolsMargin
-        anchors.bottomMargin: parentToolInsets.bottomEdgeLeftInset + _toolsMargin
-        anchors.leftMargin: _toolsMargin
-        width: parentToolInsets.leftEdgeTopInset - _toolsMargin
-        color: 'red'
+        id:                         sendRect
+        anchors.top:                parent.top
+        anchors.topMargin:          parentToolInsets.topEdgeLeftInset + _toolsMargin
+        anchors.horizontalCenter:   parent.horizontalCenter
+        height:                     column.height * 1.5
+        width:                      column.width * 1.5
+        radius:                     2
+        color:                      qgcPal.windowShadeDark
 
-        property real leftEdgeCenterInset: visible ? x + width : 0
+        Column {
+            id:                     column
+            anchors.margins:        _toolsMargin
+            anchors.centerIn:       parent
+            spacing:                ScreenTools.defaultFontPixelHeight * 0.25
+
+            QGCLabel {
+                anchors.horizontalCenter:   parent.horizontalCenter
+                text:                       "敌机坐标"
+                font.bold:                  true
+            }
+
+            Row {
+                anchors.left:       parent.left
+                anchors.right:      parent.right
+                spacing:            ScreenTools.defaultFontPixelWidth * 0.25
+
+                QGCLabel {
+                    id:                         labelX
+                    anchors.verticalCenter:     inputX.verticalCenter
+                    text:                       qsTr("x")
+                }
+           
+                QGCTextField {
+                    id:                         inputX
+                    width:                      parent.width - labelX.width  - parent.spacing
+                    height:                     labelX.implicitHeight * 1.5
+                    focus:                      true
+                }
+            }
+
+
+            QGCButton {
+                id:                             sendPosition
+                width:                          parent.width
+                text:                           qsTr("发送")
+                enabled:                        _activeVehicle
+                onClicked: {
+                }
+            }
+        }
     }
 }
