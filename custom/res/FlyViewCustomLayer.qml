@@ -137,7 +137,7 @@ Item {
                             1, 
                             inputX.text, 
                             inputY.text, 
-                            inputZ.text,
+                            inputZ.text
                         )
                     }
                 }
@@ -149,9 +149,8 @@ Item {
                     onClicked: {
                          _activeVehicle.sendMavCommand(
                             _vehicle.defaultComponentId(), 
-                            MAV_CMD_USER_1, 
-                            false,
-                            0
+                            MAV_CMD_USER_2, 
+                            false
                         )
                     }
                 }
