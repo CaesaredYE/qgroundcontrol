@@ -27,6 +27,8 @@ import QGroundControl.Palette       1.0
 import QGroundControl.ScreenTools   1.0
 import QGroundControl.Vehicle       1.0
 
+import MAVLink                      1.0
+
 Item {
     id: _root
 
@@ -132,7 +134,7 @@ Item {
                     onClicked: {
                          _activeVehicle.sendMavCommand(
                             0, 
-                            MAV_CMD_USER_1, 
+                            MAVLink.MAV_CMD_USER_1, 
                             false,  
                             1, 
                             inputX.text, 
@@ -149,7 +151,7 @@ Item {
                     onClicked: {
                          _activeVehicle.sendMavCommand(
                             0, 
-                            MAV_CMD_USER_2, 
+                            MAVLink.MAV_CMD_USER_2, 
                             false
                         )
                     }
