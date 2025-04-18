@@ -1,7 +1,7 @@
 <RCC>
     <qresource prefix="/res">
-        <file alias="QGCLogoFull">../resources/icons/qgroundcontrol.png</file>
-        <file alias="QGCLogoWhite">../resources/icons/qgroundcontrol.png</file>
+        <file alias="QGCLogoFull">res/logo.svg</file>
+        <file alias="QGCLogoWhite">res/logo.svg</file>
     </qresource>
     <qresource prefix="/qml">
         <file alias="QGroundControl/FlightDisplay/FlyViewCustomLayer.qml">res/FlyViewCustomLayer.qml</file>

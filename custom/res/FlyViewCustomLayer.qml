@@ -131,7 +131,7 @@ Item {
                     enabled:                        _activeVehicle
                     onClicked: {
                          _activeVehicle.sendMavCommand(
-                            _vehicle.defaultComponentId(), 
+                            0, 
                             MAV_CMD_USER_1, 
                             false,  
                             1, 
@@ -148,7 +148,7 @@ Item {
                     enabled:                        _activeVehicle
                     onClicked: {
                          _activeVehicle.sendMavCommand(
-                            _vehicle.defaultComponentId(), 
+                            0, 
                             MAV_CMD_USER_2, 
                             false
                         )
