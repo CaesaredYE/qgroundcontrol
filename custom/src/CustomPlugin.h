@@ -12,8 +12,7 @@
 #pragma once
 
 #include "QGCCorePlugin.h"
-
-class CustomPlugin;
+#include "Vehicle.h"
 
 class CustomPlugin : public QGCCorePlugin
 {
@@ -24,5 +23,5 @@ public:
 
     Q_INVOKABLE void sendPositionMsg(Vehicle *vehicle, float x = 0.0f, float y = 0.0f, float z = 0.0f);
 
-    Q_INVOKABLE void sendStopCommand(Vehicle* vehicle);
+    Q_INVOKABLE void sendStopCommand(Vehicle *vehicle);
 };
