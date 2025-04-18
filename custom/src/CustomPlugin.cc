@@ -11,8 +11,18 @@
 
 #include "CustomPlugin.h"
 #include "QGCApplication.h"
- 
-CustomPlugin::CustomPlugin(QGCApplication *app, QGCToolbox* toolbox)
+
+CustomPlugin::CustomPlugin(QGCApplication *app, QGCToolbox *toolbox)
     : QGCCorePlugin(app, toolbox)
 {
+}
+
+void CustomPlugin::sendPositionMsg(float x, float y, float z)
+{
+    _activeVehicle->sendMavCommand(0, MAV_CMD_USER_1, false, x, y, z);
+}
+
+void CustomPlugin::sendStopCommand()
+{
+    _activeVehicle->sendMavCommand(0, MAV_CMD_USER_2, false);
 }
