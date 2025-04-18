@@ -12,14 +12,15 @@
 #pragma once
 
 #include "QGCCorePlugin.h"
-#include <QTranslator>
 
 class CustomPlugin;
 
 class CustomPlugin : public QGCCorePlugin
 {
+    Q_OBJECT
 public:
     CustomPlugin(QGCApplication *app, QGCToolbox *toolbox);
+    ~CustomPlugin();
 
     Q_INVOKABLE void sendPositionMsg(float x = 0.0f, float y = 0.0f, float z = 0.0f);
 
