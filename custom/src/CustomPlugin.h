@@ -22,7 +22,7 @@ public:
     CustomPlugin(QGCApplication *app, QGCToolbox *toolbox);
     ~CustomPlugin();
 
-    Q_INVOKABLE void sendPositionMsg(float x = 0.0f, float y = 0.0f, float z = 0.0f);
+    Q_INVOKABLE void sendPositionMsg(Vehicle *vehicle, float x = 0.0f, float y = 0.0f, float z = 0.0f);
 
-    Q_INVOKABLE void sendStopCommand();
+    Q_INVOKABLE void sendStopCommand(Vehicle* vehicle);
 };

@@ -132,7 +132,7 @@ Item {
                     text: qsTr("发送")
                     enabled: _activeVehicle
                     onClicked: {
-                        QGroundControl.corePlugin.sendPositionMsg(inputX.text, inputY.text, inputZ.text);
+                        QGroundControl.corePlugin.sendPositionMsg(_activeVehicle, inputX.text, inputY.text, inputZ.text);
                     }
                 }
 
@@ -141,7 +141,7 @@ Item {
                     text: qsTr("紧急停止")
                     enabled: _activeVehicle
                     onClicked: {
-                        QGroundControl.corePlugin.sendStopCommand();
+                        QGroundControl.corePlugin.sendStopCommand(_activeVehicle);
                     }
                 }
             }

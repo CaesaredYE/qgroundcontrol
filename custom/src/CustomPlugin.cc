@@ -20,12 +20,12 @@ CustomPlugin::~CustomPlugin()
 {
 }
 
-void CustomPlugin::sendPositionMsg(float x, float y, float z)
+void CustomPlugin::sendPositionMsg(Vehicle *vehicle, float x, float y, float z)
 {
-    _activeVehicle->sendMavCommand(0, MAV_CMD_USER_1, false, x, y, z);
+    vehicle->sendMavCommand(0, MAV_CMD_USER_1, false, x, y, z);
 }
 
-void CustomPlugin::sendStopCommand()
+void CustomPlugin::sendStopCommand(Vehicle *vehicle)
 {
-    _activeVehicle->sendMavCommand(0, MAV_CMD_USER_2, false);
+    vehicle->sendMavCommand(0, MAV_CMD_USER_2, false);
 }
