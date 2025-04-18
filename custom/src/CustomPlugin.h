@@ -21,7 +21,7 @@ class CustomPlugin : public QGCCorePlugin
 public:
     CustomPlugin(QGCApplication *app, QGCToolbox *toolbox);
 
-    void sendPositionMsg(float x = 0.0f, float y = 0.0f, float z = 0.0f);
+    Q_INVOKABLE void sendPositionMsg(float x = 0.0f, float y = 0.0f, float z = 0.0f);
 
-    void sendStopCommand();
+    Q_INVOKABLE void sendStopCommand();
 };
