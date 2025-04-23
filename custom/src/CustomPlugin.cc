@@ -22,10 +22,28 @@ CustomPlugin::~CustomPlugin()
 
 void CustomPlugin::sendPositionMsg(Vehicle *vehicle, float x, float y, float z)
 {
-    vehicle->sendMavCommand(0, MAV_CMD_USER_1, false, x, y, z);
+    vehicle->sendMavCommand(MAV_COMP_ID_UDP_BRIDGE,
+                            MAV_CMD_USER_1,
+                            false,
+                            x,
+                            y,
+                            z,
+                            NAN,
+                            NAN,
+                            NAN,
+                            NAN);
 }
 
 void CustomPlugin::sendStopCommand(Vehicle *vehicle)
 {
-    vehicle->sendMavCommand(0, MAV_CMD_USER_2, false);
+    vehicle->sendMavCommand(MAV_COMP_ID_UDP_BRIDGE,
+                            MAV_CMD_USER_2,
+                            false,
+                            NAN,
+                            NAN,
+                            NAN,
+                            NAN,
+                            NAN,
+                            NAN,
+                            NAN);
 }
