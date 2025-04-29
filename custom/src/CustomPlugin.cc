@@ -10,6 +10,7 @@
  */
 
 #include "CustomPlugin.h"
+#include <QDebug>
 
 CustomPlugin::CustomPlugin(QGCApplication *app, QGCToolbox *toolbox)
     : QGCCorePlugin(app, toolbox)
@@ -20,14 +21,34 @@ CustomPlugin::~CustomPlugin()
 {
 }
 
-void CustomPlugin::sendPositionMsg(Vehicle *vehicle, float x, float y, float z)
+void CustomPlugin::sendPositionMsg(Vehicle *vehicle, const QString& x, const QString& y, const QString& z)
 {
+
+    qDebug() << "Variable x:" << x;
+    qDebug() << "Variable y:" << y;
+    qDebug() << "Variable z:" << z;
+
+    qDebug() << "Variable x:" << x.toFloat();
+    qDebug() << "Variable y:" << y.toFloat();
+    qDebug() << "Variable z:" << z.toFloat();
+
     vehicle->sendMavCommand(MAV_COMP_ID_UDP_BRIDGE,
                             MAV_CMD_USER_1,
-                            false,
-                            x,
-                            y,
-                            z,
+                            true,
+                            x.toFloat(),
+                            y.toFloat(),
+                            z.toFloat(),
+                            NAN,
+                            NAN,
+                            NAN,
+                            NAN);
+
+    vehicle->sendMavCommand(MAV_COMP_ID_UDP_BRIDGE,
+                            MAV_CMD_USER_1,
+                            true,
+                            3.12456789f,
+                            4.987654321f,
+                            5.123456f,
                             NAN,
                             NAN,
                             NAN,

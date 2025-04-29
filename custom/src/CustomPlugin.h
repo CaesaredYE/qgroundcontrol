@@ -21,7 +21,7 @@ public:
     CustomPlugin(QGCApplication *app, QGCToolbox *toolbox);
     ~CustomPlugin();
 
-    Q_INVOKABLE void sendPositionMsg(Vehicle *vehicle, float x, float y, float z);
+    Q_INVOKABLE void sendPositionMsg(Vehicle *vehicle, const QString& x, const QString& y, const QString& z);
 
     Q_INVOKABLE void sendStopCommand(Vehicle *vehicle);
 };

@@ -88,7 +88,6 @@ Item {
                     id: inputX
                     width: ScreenTools.defaultFontPixelHeight * 8
                     height: labelX.height * 1.2
-                    numericValuesOnly: true
                 }
             }
 
@@ -105,7 +104,6 @@ Item {
                     id: inputY
                     width: ScreenTools.defaultFontPixelHeight * 8
                     height: labelY.height * 1.2
-                    numericValuesOnly: true
                 }
             }
 
@@ -122,7 +120,6 @@ Item {
                     id: inputZ
                     width: ScreenTools.defaultFontPixelHeight * 8
                     height: labelZ.height * 1.2
-                    numericValuesOnly: true
                 }
             }
 
@@ -135,7 +132,8 @@ Item {
                     text: qsTr("发送")
                     enabled: _activeVehicle
                     onClicked: {
-                        QGroundControl.corePlugin.sendPositionMsg(_activeVehicle, parseFloat(inputX.text), parseFloat(inputY.text), parseFloat(inputZ.text));
+                        console.log("MAV_CMD_USER_1", inputX.text, inputY.text, inputZ.text);
+                        QGroundControl.corePlugin.sendPositionMsg(_activeVehicle, inputX.text, inputY.text, inputZ.text);
                     }
                 }
 
