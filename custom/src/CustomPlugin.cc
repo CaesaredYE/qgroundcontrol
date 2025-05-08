@@ -24,41 +24,33 @@ CustomPlugin::~CustomPlugin()
 void CustomPlugin::sendPositionMsg(Vehicle *vehicle, const QString& x, const QString& y, const QString& z)
 {
 
-    qDebug() << "Variable x:" << x;
-    qDebug() << "Variable y:" << y;
-    qDebug() << "Variable z:" << z;
+    qDebug() << "QString x:" << x;
+    qDebug() << "QString y:" << y;
+    qDebug() << "QString z:" << z;
 
-    qDebug() << "Variable x:" << x.toFloat();
-    qDebug() << "Variable y:" << y.toFloat();
-    qDebug() << "Variable z:" << z.toFloat();
+    qDebug() << "toDouble x:" << QString::number(x.toDouble(), 'f', 10);
+    qDebug() << "toDouble y:" << QString::number(y.toDouble(), 'f', 10);
+    qDebug() << "toFloat z:" << QString::number(z.toFloat());
 
-    vehicle->sendMavCommand(MAV_COMP_ID_UDP_BRIDGE,
-                            MAV_CMD_USER_1,
-                            true,
-                            x.toFloat(),
-                            y.toFloat(),
-                            z.toFloat(),
-                            NAN,
-                            NAN,
-                            NAN,
-                            NAN);
 
-    vehicle->sendMavCommand(MAV_COMP_ID_UDP_BRIDGE,
-                            MAV_CMD_USER_1,
-                            true,
-                            3.12456789f,
-                            4.987654321f,
-                            5.123456f,
-                            NAN,
-                            NAN,
-                            NAN,
-                            NAN);
+    vehicle->sendMavCommandInt(MAV_COMP_ID_UDP_BRIDGE,
+                               MAV_CMD_USER_1,
+                               MAV_FRAME_GLOBAL,
+                               false,
+                               NAN,
+                               NAN,
+                               NAN,
+                               NAN,
+                               x.toDouble(),
+                               y.toDouble(),
+                               z.toFloat());
 }
 
 void CustomPlugin::sendStopCommand(Vehicle *vehicle)
 {
-    vehicle->sendMavCommand(MAV_COMP_ID_UDP_BRIDGE,
+    vehicle->sendMavCommandInt(MAV_COMP_ID_UDP_BRIDGE,
                             MAV_CMD_USER_2,
+                            MAV_FRAME_GLOBAL,
                             false,
                             NAN,
                             NAN,
