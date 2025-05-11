@@ -15,6 +15,8 @@
 CustomPlugin::CustomPlugin(QGCApplication *app, QGCToolbox *toolbox)
     : QGCCorePlugin(app, toolbox)
 {
+    _radarReceiver = new RadarReceiver(this);
+    _radarReceiver->startConnection("localhost", 12580, 8000);
 }
 
 CustomPlugin::~CustomPlugin()

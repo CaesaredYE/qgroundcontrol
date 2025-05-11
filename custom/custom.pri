@@ -31,9 +31,11 @@ QML_IMPORT_PATH += \
 
 SOURCES += \
     $$PWD/src/CustomPlugin.cc \
+    $$PWD/src/RadarReceiver.cc
 
 HEADERS += \
     $$PWD/src/CustomPlugin.h \
+    $$PWD/src/RadarReceiver.h
 
 INCLUDEPATH += \
     $$PWD/src \
