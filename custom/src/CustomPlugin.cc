@@ -15,21 +15,11 @@
 CustomPlugin::CustomPlugin(QGCApplication *app, QGCToolbox *toolbox)
     : QGCCorePlugin(app, toolbox)
 {
-    _radarReceiver = new RadarReceiver(this);
-    _radarReceiver->startConnection("localhost", 12580, 8000);
-}
-
-CustomPlugin::~CustomPlugin()
-{
+    qmlRegisterSingletonInstance("RadarReceiver", 1, 0, "RadarReceiver", new RadarReceiver(this));
 }
 
 void CustomPlugin::sendPositionMsg(Vehicle *vehicle, const QString& x, const QString& y, const QString& z)
 {
-
-    qDebug() << "QString x:" << x;
-    qDebug() << "QString y:" << y;
-    qDebug() << "QString z:" << z;
-
     qDebug() << "toDouble x:" << QString::number(x.toDouble(), 'f', 10);
     qDebug() << "toDouble y:" << QString::number(y.toDouble(), 'f', 10);
     qDebug() << "toFloat z:" << QString::number(z.toFloat());

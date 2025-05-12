@@ -5,18 +5,19 @@
 #include <QTimer>
 
 RadarReceiver::RadarReceiver(QObject* parent)
-    : QObject(parent), _udpSocket(new QUdpSocket(this)) {}
+    : QObject(parent) 
+{
+}
 
-void RadarReceiver::startConnection(const QString& remoteIp, quint16 remotePort, quint16 localPort) {
-    _remoteHost = QHostAddress(remoteIp);
-    _remotePort = remotePort;
+void RadarReceiver::start() {
+    _udpSocket = new QUdpSocket(this);
 
-    if (!_udpSocket->bind(QHostAddress::AnyIPv4, localPort)) {
-        qWarning() << "Failed to bind UDP port for radar";
+    if (!_udpSocket->bind(QHostAddress::AnyIPv4, _localPort)) {
+        qWarning() << "Failed to bind local UDP port for radar";
         return;
     }
 
-    connect(_udpSocket, &QUdpSocket::readyRead, this, &RadarReceiver::processPendingDatagrams);
+    connect(_udpSocket, &QUdpSocket::readyRead, this, &RadarReceiver::readData);
 
     const uint8_t data[10] = {0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0xAA};
     QByteArray byteArray(reinterpret_cast<const char*>(data), sizeof(data));
@@ -30,17 +31,7 @@ void RadarReceiver::startConnection(const QString& remoteIp, quint16 remotePort,
     pollTimer->start(1000 * 60);
 }
 
-struct TrackInfo {
-    uint32_t batch; // 批号
-    float lat; // 纬度
-    float lon; // 经度
-    float alt; // 高度
-    uint16_t existFlag; // 存在标识
-};
-
-void RadarReceiver::processPendingDatagrams() {
-    // QList<QGeoCoordinate> targets;
-
+void RadarReceiver::readData() {
     while (_udpSocket->hasPendingDatagrams()) {
         QByteArray datagram;
         datagram.resize(_udpSocket->pendingDatagramSize());
@@ -61,32 +52,36 @@ void RadarReceiver::processPendingDatagrams() {
             info.existFlag = datagram.constData()[36];
             memcpy(&info.alt, datagram.constData() + 52, sizeof(float));
 
-            qDebug() << "批号" << info.batch;
-            qDebug() << "纬度" << info.lat;
-            qDebug() << "经度" << info.lon;
-            qDebug() << "高度" << info.alt;
-            qDebug() << "存在标识" << info.existFlag;
+            qDebug() << "批号" << info.batch << "纬度" << info.lat  << "经度" << info.lon << "高度" << info.alt << "存在标识" << info.existFlag;
+
+            updateTrack(info);
         }
+    }
+}
 
-        // float angle, distance, intensity;
-        // stream >> angle >> distance >> intensity;
+void RadarReceiver::updateTrack(const TrackInfo& info) {
+    for (int i = 0; i < _tracks.size(); ++i) {
+        if (_tracks[i].batch == info.batch) {
+            _tracks[i] = info;
+            emit trackListChanged();
+            return;
+        }
+    }
+    _tracks.append(info);
+    emit trackListChanged();
+}
 
-        // emit radarDataReceived(angle, distance, intensity);
-
-        // // Optional: convert to GPS (dummy location for example)
-        // QGeoCoordinate origin(39.9042, 116.4074); // e.g., Beijing
-        // double angleRad = qDegreesToRadians(angle);
-        // double earthRadius = 6378137.0;
-        // double deltaLat = (distance * cos(angleRad)) / earthRadius;
-        // double deltaLon = (distance * sin(angleRad)) / (earthRadius * cos(qDegreesToRadians(origin.latitude())));
-        // QGeoCoordinate targetCoord(
-        //     origin.latitude() + qRadiansToDegrees(deltaLat),
-        //     origin.longitude() + qRadiansToDegrees(deltaLon)
-        // );
-        // targets.append(targetCoord);
+QVariantList RadarReceiver::trackList() const {
+    QVariantList list;
+    for (const TrackInfo& t : _tracks) {
+        QVariantMap map;
+        map["batch"] = t.batch;
+        map["lat"] = t.lat;
+        map["lon"] = t.lon;
+        map["alt"] = t.alt;
+        map["existFlag"] = t.existFlag;
+        list.append(map);
     }
 
-    // if (!targets.isEmpty()) {
-    //     emit radarTargetsUpdated(targets);
-    // }
+    return list;
 }

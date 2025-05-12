@@ -5,5 +5,6 @@
     </qresource>
     <qresource prefix="/qml">
         <file alias="QGroundControl/FlightDisplay/FlyViewCustomLayer.qml">res/FlyViewCustomLayer.qml</file>
+        <file alias="QGroundControl/FlightMap/CustomMapItems.qml">res/CustomMapItems.qml</file>
     </qresource>
 </RCC>
