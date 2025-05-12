@@ -28,7 +28,7 @@ Item {
     id: radar
     property var    map
     property bool   largeMapView
-    property var    radarCenter: QtPositioning.coordinate(31, 115)
+    property var    radarCenter: QtPositioning.coordinate(30.2, 114)
     property var    selectedTrack: null
 
     Component.onCompleted: {
@@ -55,39 +55,28 @@ Item {
         model: RadarReceiver.trackList
         delegate: MapQuickItem {
             parent: map
+            visible: modelData.existFlag == 1
             anchorPoint.x: 5
             anchorPoint.y: 5
-            coordinate: QtPositioning.coordinate(model.lat, model.lon)
+            coordinate: QtPositioning.coordinate(modelData.lat, modelData.lon)
             z: QGroundControl.zOrderMapItems
             sourceItem: Rectangle {
-                width: 10
-                height: 10
-                radius: 5
-                color: model.existFlag === 1 ? "red" : "gray"
+                width: 20
+                height: 20
+                radius: 20
+                color: "red"
                 border.color: "black"
                 border.width: 1
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        console.log("Clicked model:", JSON.stringify({
-                                                                         "alt": model.alt,
-                                                                         "batch": model.batch,
-                                                                         "existFlag": model.existFlag,
-                                                                         "lat": model.lat,
-                                                                         "lon": : model.lon
-                                                                     }))
-                        radar.selectedTrack = model
+                        console.log("Clicked Track:", modelData.batch)
+                        radar.selectedTrack = modelData
                     }
                 }
             }
             Component.onCompleted: {
-                console.log("Track created:", JSON.stringify({
-                                                                 "alt": model.alt,
-                                                                 "batch": model.batch,
-                                                                 "existFlag": model.existFlag,
-                                                                 "lat": model.lat,
-                                                                 "lon": : model.lon
-                                                             }))
+                console.log("Track Created:", modelData.batch)
             }
         }
     }
@@ -106,7 +95,7 @@ Item {
         sourceItem: Button {
             text: "选为目标"
             onClicked: {
-                console.log("Select target:", radar.selectedTrack.batch)
+                console.log("Select Track:", radar.selectedTrack.batch)
                 // 你可以在这里调用 C++ 的方法或发送信号
                 radar.selectedTrack = null
             }
@@ -126,8 +115,8 @@ Item {
     // 扫描视图（在雷达中心绘制）
     Item {
         id: radarScan
-        width: 3000
-        height: 3000
+        width: 500
+        height: 500
 
         Canvas {
             id: radarCanvas
@@ -158,7 +147,7 @@ Item {
             }
 
             Timer {
-                interval: 16
+                interval: 2
                 running: true
                 repeat: true
                 onTriggered: {
