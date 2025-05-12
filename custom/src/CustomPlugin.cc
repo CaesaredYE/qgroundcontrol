@@ -41,14 +41,14 @@ void CustomPlugin::sendPositionMsg(Vehicle *vehicle, const QString& x, const QSt
 void CustomPlugin::sendStopCommand(Vehicle *vehicle)
 {
     vehicle->sendMavCommandInt(MAV_COMP_ID_UDP_BRIDGE,
-                            MAV_CMD_USER_2,
-                            MAV_FRAME_GLOBAL,
-                            false,
-                            NAN,
-                            NAN,
-                            NAN,
-                            NAN,
-                            NAN,
-                            NAN,
-                            NAN);
+                               MAV_CMD_USER_2,
+                               MAV_FRAME_GLOBAL,
+                               false,
+                               NAN,
+                               NAN,
+                               NAN,
+                               NAN,
+                               NAN,
+                               NAN,
+                               NAN);
 }

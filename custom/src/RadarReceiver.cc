@@ -23,7 +23,7 @@ void RadarReceiver::start() {
     QByteArray byteArray(reinterpret_cast<const char*>(data), sizeof(data));
 
     _udpSocket->writeDatagram(byteArray, _remoteHost, _remotePort);
- 
+
     QTimer* pollTimer = new QTimer(this);
     connect(pollTimer, &QTimer::timeout, this, [=]() {
         _udpSocket->writeDatagram(byteArray, _remoteHost, _remotePort);
@@ -82,6 +82,5 @@ QVariantList RadarReceiver::trackList() const {
         map["existFlag"] = t.existFlag;
         list.append(map);
     }
-
     return list;
 }

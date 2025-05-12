@@ -29,7 +29,6 @@ Item {
     property var    map
     property bool   largeMapView
     property var    radarCenter: QtPositioning.coordinate(31, 115)
-    property real   radarRangeMeters: 3000  // 雷达扫描半径
     property var    selectedTrack: null
 
     Component.onCompleted: {
@@ -52,9 +51,10 @@ Item {
     }
 
     MapItemView {
+        parent: map
         model: RadarReceiver.trackList
         delegate: MapQuickItem {
-            id: trackItem
+            parent: map
             anchorPoint.x: 5
             anchorPoint.y: 5
             coordinate: QtPositioning.coordinate(model.lat, model.lon)
@@ -69,24 +69,36 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        console.log("Clicked model:", JSON.stringify(model))
+                        console.log("Clicked model:", JSON.stringify({
+                                                                         "alt": model.alt,
+                                                                         "batch": model.batch,
+                                                                         "existFlag": model.existFlag,
+                                                                         "lat": model.lat,
+                                                                         "lon": : model.lon
+                                                                     }))
                         radar.selectedTrack = model
                     }
                 }
             }
             Component.onCompleted: {
-                console.log("Track created:", JSON.stringify(model))
+                console.log("Track created:", JSON.stringify({
+                                                                 "alt": model.alt,
+                                                                 "batch": model.batch,
+                                                                 "existFlag": model.existFlag,
+                                                                 "lat": model.lat,
+                                                                 "lon": : model.lon
+                                                             }))
             }
         }
     }
 
     // 显示点击按钮
     MapQuickItem {
-        id: selectBtn
+        parent: map
         visible: radar.selectedTrack !== null
         coordinate: radar.selectedTrack !== null
-                     ? QtPositioning.coordinate(radar.selectedTrack.lat, radar.selectedTrack.lon)
-                     : QtPositioning.coordinate(0, 0)
+                    ? QtPositioning.coordinate(radar.selectedTrack.lat, radar.selectedTrack.lon)
+                    : QtPositioning.coordinate(0, 0)
         anchorPoint.x: 0
         anchorPoint.y: 40
         z: QGroundControl.zOrderWidgets
@@ -94,7 +106,7 @@ Item {
         sourceItem: Button {
             text: "选为目标"
             onClicked: {
-                console.log("Select target:", JSON.stringify(radar.selectedTrack))
+                console.log("Select target:", radar.selectedTrack.batch)
                 // 你可以在这里调用 C++ 的方法或发送信号
                 radar.selectedTrack = null
             }
@@ -103,17 +115,19 @@ Item {
 
     // 雷达中心点
     MapQuickItem {
+        parent: map
         coordinate: radarCenter
         anchorPoint.x: radarScan.width / 2
         anchorPoint.y: radarScan.height / 2
         sourceItem: radarScan
+        z: QGroundControl.zOrderMapItems
     }
 
     // 扫描视图（在雷达中心绘制）
     Item {
         id: radarScan
-        width: 200
-        height: 200
+        width: 3000
+        height: 3000
 
         Canvas {
             id: radarCanvas
@@ -130,8 +144,8 @@ Item {
                 ctx.rotate(rotationAngle * Math.PI / 180);
 
                 var gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, width / 2);
-                gradient.addColorStop(0, "rgba(0,255,0,0.3)");
-                gradient.addColorStop(1, "rgba(0,255,0,0)");
+                gradient.addColorStop(0, "rgba(255, 0, 0, 0.4)");
+                gradient.addColorStop(1, "rgba(0, 255, 0, 0)");
 
                 ctx.beginPath();
                 ctx.moveTo(0, 0);
