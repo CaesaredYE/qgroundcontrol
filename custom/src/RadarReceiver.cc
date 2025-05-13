@@ -88,7 +88,7 @@ void RadarReceiver::setTargetBatch(quint32 batch)
 {
     qDebug() << "设置目标batch：" << batch;
     _targetBatch = batch;
-    sendTrackToVehicle()
+    sendTrackToVehicle();
 }
 
 void RadarReceiver::sendTrackToVehicle()
