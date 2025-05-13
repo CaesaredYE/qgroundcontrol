@@ -20,16 +20,18 @@ CustomPlugin::CustomPlugin(QGCApplication *app, QGCToolbox *toolbox)
 
 void CustomPlugin::sendTargetLocation(Vehicle *vehicle, float lat, float lon, float alt)
 {
-    vehicle->sendMavCommand(MAV_COMP_ID_UDP_BRIDGE,
-                               MAV_CMD_USER_1,
-                               false,
-                               NAN,
-                               NAN,
-                               NAN,
-                               NAN,
-                               lat,
-                               lon,
-                               alt);
+     qDebug() << "lat:" << lat<< "lon:" << lon << "alt:" << alt;
+
+    // vehicle->sendMavCommand(MAV_COMP_ID_UDP_BRIDGE,
+    //                            MAV_CMD_USER_1,
+    //                            false,
+    //                            NAN,
+    //                            NAN,
+    //                            NAN,
+    //                            NAN,
+    //                            lat,
+    //                            lon,
+    //                            alt);
 }
 
 void CustomPlugin::sendPositionMsg(Vehicle *vehicle, const QString& x, const QString& y, const QString& z)
