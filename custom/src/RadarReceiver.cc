@@ -63,9 +63,9 @@ void RadarReceiver::readData() {
                 _tracks[info.batch] = info;
             }
 
-            sendTrackToVehicle();
-
             emit trackListChanged();
+
+            sendTrackToVehicle();
         }
     }
 }
@@ -88,12 +88,12 @@ void RadarReceiver::setTargetBatch(quint32 batch)
 {
     qDebug() << "设置目标batch：" << batch;
     _targetBatch = batch;
+    sendTrackToVehicle()
 }
 
 void RadarReceiver::sendTrackToVehicle()
 {
     if (_targetBatch) {
-
         TrackInfo target = _tracks[_targetBatch];
 
         Vehicle* vehicle = qgcApp()->toolbox()->multiVehicleManager()->activeVehicle();
@@ -101,17 +101,17 @@ void RadarReceiver::sendTrackToVehicle()
             return;
         }
 
-         qDebug() << "发送目标位置至车辆：" << _targetBatch << target.lat << target.lon << target.alt;
+        qDebug() << "发送目标位置至车辆：" << _targetBatch << target.lat << target.lon << target.alt;
 
         vehicle->sendMavCommand(MAV_COMP_ID_UDP_BRIDGE,
-                               MAV_CMD_USER_1,
-                               false,
-                               NAN,
-                               NAN,
-                               NAN,
-                               NAN,
-                               target.lat,
-                               target.lon,
-                               target.alt);
+                                MAV_CMD_USER_1,
+                                false,
+                                NAN,
+                                NAN,
+                                NAN,
+                                NAN,
+                                target.lat,
+                                target.lon,
+                                target.alt);
     }
 }
