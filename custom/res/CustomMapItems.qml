@@ -30,28 +30,10 @@ Item {
     property bool   largeMapView
     property var    radarCenter: QtPositioning.coordinate(30.276150, 114.070351)
     property var    selectedTrack: null
-    property var    targetBatch: null
-    property var    _activeVehicle: QGroundControl.multiVehicleManager.activeVehicle
 
     Component.onCompleted: {
         if (map) {
             map.center = radarCenter;
-        }
-
-        RadarReceiver.start()
-    }
-
-    Connections {
-        target: RadarReceiver
-        onTrackListChanged: {
-            for (let i = 0; i < RadarReceiver.trackList.length; ++i) {
-                let item = RadarReceiver.trackList[i]
-                console.log(`Track Updated ${i}:`, JSON.stringify(item))
-
-                // if (radar.targetBatch && item.batch === radar.targetBatch && item.existFlag) {
-                //     QGroundControl.corePlugin.sendTargetLocation(_activeVehicle, item.lat, item.lon, item.alt);
-                // }
-            }
         }
     }
 
@@ -76,15 +58,18 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        console.log("Clicked Track:", modelData.batch)
-                        radar.selectedTrack = radar.selectedTrack ? null: modelData
+                        if (radar.selectedTrack && (radar.selectedTrack.batch === modelData.batch)){
+                            radar.selectedTrack = null;
+                        } else {
+                            radar.selectedTrack = modelData;
+                        }
                     }
                 }
             }
         }
     }
 
-    // 显示点击按钮
+    // 选为目标按钮
     MapQuickItem {
         parent: map
         visible: radar.selectedTrack !== null
@@ -98,9 +83,8 @@ Item {
         sourceItem: QGCButton {
             text: "选为目标"
             onClicked: {
-                console.log("Target batch:", radar.selectedTrack.batch)
-                radar.targetBatch = radar.selectedTrack.batch
-                radar.selectedTrack = null
+                RadarReceiver.setTargetBatch(radar.selectedTrack.batch)
+                radar.selectedTrack = null;
             }
         }
     }
@@ -115,7 +99,7 @@ Item {
         z: QGroundControl.zOrderMapItems
     }
 
-    // 扫描视图（在雷达中心绘制）
+    // 雷达扫描效果
     Item {
         id: radarScan
         width: 1024

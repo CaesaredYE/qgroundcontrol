@@ -38,50 +38,41 @@ void RadarReceiver::readData() {
         qint64 bytesRead = _udpSocket->readDatagram(datagram.data(), datagram.size());
 
         if (bytesRead == -1) {
-            qDebug() << "读取失败：" << _udpSocket->errorString();
+            qWarning() << "读取失败：" << _udpSocket->errorString();
         }
 
         // 航迹报文
         if (datagram.size() >= 56 && datagram.constData()[4] == 0x01) {
             qDebug() << "收到航迹报文：" << datagram.toHex();
 
-            uint16_t trackCount;
-            memcpy(&trackCount, datagram.constData() + 8, sizeof(uint16_t));
+            quint16 trackCount;
+            memcpy(&trackCount, datagram.constData() + 8, sizeof(quint16));
 
             for (int i = 0; i < trackCount; ++i) {
-
                 int offset =  i * 80;
 
                 TrackInfo info {};
-                memcpy(&info.batch, datagram.constData() + 12 + offset, sizeof(uint32_t));
+                memcpy(&info.batch, datagram.constData() + 12 + offset, sizeof(quint32));
                 memcpy(&info.lat, datagram.constData() + 24 + offset, sizeof(float));
                 memcpy(&info.lon, datagram.constData() + 28 + offset, sizeof(float));
                 memcpy(&info.alt, datagram.constData() + 52 + offset, sizeof(float));
-                memcpy(&info.existFlag, datagram.constData() + 36 + offset, sizeof(uint16_t));
+                memcpy(&info.existFlag, datagram.constData() + 36 + offset, sizeof(quint16));
 
                 qDebug() << "批号" << info.batch << "纬度" << info.lat  << "经度" << info.lon << "高度" << info.alt << "存在标识" << info.existFlag;
 
-                updateTrack(info);
+                _tracks[info.batch] = info;
             }
-        }
-    }
-}
 
-void RadarReceiver::updateTrack(const TrackInfo& info) {
-    for (int i = 0; i < _tracks.size(); ++i) {
-        if (_tracks[i].batch == info.batch) {
-            _tracks[i] = info;
+            sendTrackToVehicle();
+
             emit trackListChanged();
-            return;
         }
     }
-    _tracks.append(info);
-    emit trackListChanged();
 }
 
 QVariantList RadarReceiver::trackList() const {
     QVariantList list;
-    for (const TrackInfo& t : _tracks) {
+    for (const auto& t : _tracks) {
         QVariantMap map;
         map["batch"] = t.batch;
         map["lat"] = t.lat;
@@ -91,4 +82,36 @@ QVariantList RadarReceiver::trackList() const {
         list.append(map);
     }
     return list;
+}
+
+void RadarReceiver::setTargetBatch(quint32 batch)
+{
+    qDebug() << "设置目标batch：" << batch;
+    _targetBatch = batch;
+}
+
+void RadarReceiver::sendTrackToVehicle()
+{
+    if (_targetBatch) {
+
+        TrackInfo target = _tracks[_targetBatch];
+
+        Vehicle* vehicle = qgcApp()->toolbox()->multiVehicleManager()->activeVehicle();
+        if (!vehicle) {
+            return;
+        }
+
+         qDebug() << "发送目标位置至车辆：" << _targetBatch << target.lat << target.lon << target.alt;
+
+        vehicle->sendMavCommand(MAV_COMP_ID_UDP_BRIDGE,
+                               MAV_CMD_USER_1,
+                               false,
+                               NAN,
+                               NAN,
+                               NAN,
+                               NAN,
+                               target.lat,
+                               target.lon,
+                               target.alt);
+    }
 }

@@ -3,13 +3,15 @@
 #include <QObject>
 #include <QUdpSocket>
 #include <QGeoCoordinate>
+#include "QGCApplication.h"
+#include "Vehicle.h"
 
 struct TrackInfo {
-    uint32_t batch; // 批号
+    quint32 batch; // 批号
     float lat; // 纬度
     float lon; // 经度
     float alt; // 高度
-    uint16_t existFlag; // 存在标识
+    quint16 existFlag; // 存在标识
 };
 
 class RadarReceiver : public QObject {
@@ -20,11 +22,12 @@ public:
     explicit RadarReceiver(QObject* parent = nullptr);
     QVariantList trackList() const;
 
+    void start();
+
+    Q_INVOKABLE void setTargetBatch(quint32 batch);
+
 signals:
     void trackListChanged();
-
-public slots:
-    void start();
 
 private slots:
     void readData();
@@ -33,9 +36,10 @@ private:
     QUdpSocket* _udpSocket = nullptr;
     QHostAddress _remoteHost = QHostAddress("localhost");
     quint16 _remotePort = 12580;
-    quint16 _localPort = 8000; 
+    quint16 _localPort = 8000;
 
-    QList<TrackInfo> _tracks;
-    
-    void updateTrack(const TrackInfo& info);
+    QMap<quint32, TrackInfo> _tracks;
+
+    quint32 _targetBatch;
+    void sendTrackToVehicle();
 };

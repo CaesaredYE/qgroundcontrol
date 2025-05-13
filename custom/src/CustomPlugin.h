@@ -22,9 +22,10 @@ class CustomPlugin : public QGCCorePlugin
 public:
     CustomPlugin(QGCApplication *app, QGCToolbox *toolbox);
 
-    Q_INVOKABLE void sendTargetLocation(Vehicle *vehicle, float lat, float lon, float alt);
+    Q_INVOKABLE void sendPositionCmd(Vehicle *vehicle, const QString& x, const QString& y, const QString& z);
 
-    Q_INVOKABLE void sendPositionMsg(Vehicle *vehicle, const QString& x, const QString& y, const QString& z);
+    Q_INVOKABLE void sendStopCmd(Vehicle *vehicle);
 
-    Q_INVOKABLE void sendStopCommand(Vehicle *vehicle);
+private:
+    RadarReceiver* _radarReceiver = nullptr;
 };

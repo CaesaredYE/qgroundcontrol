@@ -132,8 +132,7 @@ Item {
                     text: qsTr("发送")
                     enabled: _activeVehicle
                     onClicked: {
-                        console.log("MAV_CMD_USER_1", inputX.text, inputY.text, inputZ.text);
-                        QGroundControl.corePlugin.sendPositionMsg(_activeVehicle, inputX.text, inputY.text, inputZ.text);
+                        QGroundControl.corePlugin.sendPositionCmd(_activeVehicle, inputX.text, inputY.text, inputZ.text);
                     }
                 }
 
@@ -142,7 +141,7 @@ Item {
                     text: qsTr("紧急停止")
                     enabled: _activeVehicle
                     onClicked: {
-                        QGroundControl.corePlugin.sendStopCommand(_activeVehicle);
+                        QGroundControl.corePlugin.sendStopCmd(_activeVehicle);
                     }
                 }
             }

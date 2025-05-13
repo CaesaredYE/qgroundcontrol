@@ -10,37 +10,17 @@
  */
 
 #include "CustomPlugin.h"
-#include <QDebug>
 
 CustomPlugin::CustomPlugin(QGCApplication *app, QGCToolbox *toolbox)
     : QGCCorePlugin(app, toolbox)
 {
-    qmlRegisterSingletonInstance("RadarReceiver", 1, 0, "RadarReceiver", new RadarReceiver(this));
+    _radarReceiver = new RadarReceiver(this);
+    _radarReceiver->start(); 
+    qmlRegisterSingletonInstance("RadarReceiver", 1, 0, "RadarReceiver", _radarReceiver);
 }
 
-void CustomPlugin::sendTargetLocation(Vehicle *vehicle, float lat, float lon, float alt)
+void CustomPlugin::sendPositionCmd(Vehicle *vehicle, const QString& x, const QString& y, const QString& z)
 {
-    qDebug() << "lat:" << lat<< "lon:" << lon << "alt:" << alt;
-
-    // vehicle->sendMavCommand(MAV_COMP_ID_UDP_BRIDGE,
-    //                            MAV_CMD_USER_1,
-    //                            false,
-    //                            NAN,
-    //                            NAN,
-    //                            NAN,
-    //                            NAN,
-    //                            lat,
-    //                            lon,
-    //                            alt);
-}
-
-void CustomPlugin::sendPositionMsg(Vehicle *vehicle, const QString& x, const QString& y, const QString& z)
-{
-    qDebug() << "toDouble x:" << QString::number(x.toDouble(), 'f', 10);
-    qDebug() << "toDouble y:" << QString::number(y.toDouble(), 'f', 10);
-    qDebug() << "toFloat z:" << QString::number(z.toFloat());
-
-
     vehicle->sendMavCommandInt(MAV_COMP_ID_UDP_BRIDGE,
                                MAV_CMD_USER_1,
                                MAV_FRAME_GLOBAL,
@@ -54,11 +34,10 @@ void CustomPlugin::sendPositionMsg(Vehicle *vehicle, const QString& x, const QSt
                                z.toFloat());
 }
 
-void CustomPlugin::sendStopCommand(Vehicle *vehicle)
+void CustomPlugin::sendStopCmd(Vehicle *vehicle)
 {
-    vehicle->sendMavCommandInt(MAV_COMP_ID_UDP_BRIDGE,
+    vehicle->sendMavCommand(MAV_COMP_ID_UDP_BRIDGE,
                                MAV_CMD_USER_2,
-                               MAV_FRAME_GLOBAL,
                                false,
                                NAN,
                                NAN,
