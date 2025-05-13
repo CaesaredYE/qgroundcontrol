@@ -45,16 +45,24 @@ void RadarReceiver::readData() {
         if (datagram.size() >= 56 && datagram.constData()[4] == 0x01) {
             qDebug() << "收到航迹报文：" << datagram.toHex();
 
-            TrackInfo info {};
-            info.batch = datagram.constData()[7];
-            memcpy(&info.lat, datagram.constData() + 24, sizeof(float));
-            memcpy(&info.lon, datagram.constData() + 28, sizeof(float));
-            info.existFlag = datagram.constData()[36];
-            memcpy(&info.alt, datagram.constData() + 52, sizeof(float));
+            uint16_t trackCount;
+            memcpy(&trackCount, datagram.constData() + 8, sizeof(uint16_t));
 
-            qDebug() << "批号" << info.batch << "纬度" << info.lat  << "经度" << info.lon << "高度" << info.alt << "存在标识" << info.existFlag;
+            for (int i = 0; i < trackCount; ++i) {
 
-            updateTrack(info);
+                int offset =  i * 80;
+
+                TrackInfo info {};
+                memcpy(&info.batch, datagram.constData() + 12 + offset, sizeof(uint32_t));
+                memcpy(&info.lat, datagram.constData() + 24 + offset, sizeof(float));
+                memcpy(&info.lon, datagram.constData() + 28 + offset, sizeof(float));
+                memcpy(&info.alt, datagram.constData() + 52 + offset, sizeof(float));
+                memcpy(&info.existFlag, datagram.constData() + 36 + offset, sizeof(uint16_t));
+
+                qDebug() << "批号" << info.batch << "纬度" << info.lat  << "经度" << info.lon << "高度" << info.alt << "存在标识" << info.existFlag;
+
+                updateTrack(info);
+            }
         }
     }
 }

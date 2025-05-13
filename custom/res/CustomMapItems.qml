@@ -44,14 +44,13 @@ Item {
     Connections {
         target: RadarReceiver
         onTrackListChanged: {
-            console.log("trackList updated:")
             for (let i = 0; i < RadarReceiver.trackList.length; ++i) {
                 let item = RadarReceiver.trackList[i]
-                console.log(`Track ${i}:`, JSON.stringify(item))
+                console.log(`Track Updated ${i}:`, JSON.stringify(item))
 
-                if (radar.targetBatch && item.batch == radar.targetBatch && item.existFlag) {
-                    QGroundControl.corePlugin.sendTargetLocation(_activeVehicle, item.lat, item.lon, item.alt);
-                }
+                // if (radar.targetBatch && item.batch === radar.targetBatch && item.existFlag) {
+                //     QGroundControl.corePlugin.sendTargetLocation(_activeVehicle, item.lat, item.lon, item.alt);
+                // }
             }
         }
     }
@@ -62,7 +61,7 @@ Item {
         model: RadarReceiver.trackList
         delegate: MapQuickItem {
             parent: map
-            visible: modelData.existFlag == 1
+            visible: modelData.existFlag === 1
             anchorPoint.x: 5
             anchorPoint.y: 5
             coordinate: QtPositioning.coordinate(modelData.lat, modelData.lon)
@@ -82,9 +81,6 @@ Item {
                     }
                 }
             }
-            Component.onCompleted: {
-                console.log("Track Created:", modelData.batch)
-            }
         }
     }
 
@@ -99,10 +95,10 @@ Item {
         anchorPoint.y: 40
         z: QGroundControl.zOrderWidgets
 
-        sourceItem: Button {
+        sourceItem: QGCButton {
             text: "选为目标"
             onClicked: {
-                console.log("Target Track batch:", radar.selectedTrack.batch)
+                console.log("Target batch:", radar.selectedTrack.batch)
                 radar.targetBatch = radar.selectedTrack.batch
                 radar.selectedTrack = null
             }
@@ -122,8 +118,8 @@ Item {
     // 扫描视图（在雷达中心绘制）
     Item {
         id: radarScan
-        width: 500
-        height: 500
+        width: 512
+        height: 512
 
         Canvas {
             id: radarCanvas
@@ -137,15 +133,29 @@ Item {
 
                 ctx.save();
                 ctx.translate(width / 2, height / 2);
+
+                // === 1. 绘制同心圆 ===
+                ctx.strokeStyle = "rgba(255, 0, 0, 0.5)";
+                ctx.lineWidth = 1;
+                var ringCount = 4; // 同心圆数量
+                var maxRadius = width / 2;
+                for (var i = 1; i <= ringCount; i++) {
+                    var radius = (i / ringCount) * maxRadius;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+                    ctx.stroke();
+                }
+
+                // === 2. 绘制旋转扇形 ===
                 ctx.rotate(rotationAngle * Math.PI / 180);
 
-                var gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, width / 2);
-                gradient.addColorStop(0, "rgba(255, 0, 0, 0.4)");
+                var gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, maxRadius);
+                gradient.addColorStop(0, "rgba(0, 255, 0, 0.4)");
                 gradient.addColorStop(1, "rgba(0, 255, 0, 0)");
 
                 ctx.beginPath();
                 ctx.moveTo(0, 0);
-                ctx.arc(0, 0, width / 2, 0, sweepAngle * Math.PI / 180);
+                ctx.arc(0, 0, maxRadius, 0, sweepAngle * Math.PI / 180);
                 ctx.closePath();
                 ctx.fillStyle = gradient;
                 ctx.fill();
@@ -154,12 +164,12 @@ Item {
             }
 
             Timer {
-                interval: 2
+                interval: 16
                 running: true
                 repeat: true
                 onTriggered: {
                     radarCanvas.rotationAngle += 1;
-                    if (radarCanvas.rotationAngle > 360)
+                    if (radarCanvas.rotationAngle >= 360)
                         radarCanvas.rotationAngle = 0;
                     radarCanvas.requestPaint();
                 }
