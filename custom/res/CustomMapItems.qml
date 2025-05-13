@@ -35,10 +35,13 @@ Item {
         if (map) {
             map.center = radarCenter;
         }
+
+        mapItemView.model = RadarReceiver.trackList
     }
 
     // 目标列表
     MapItemView {
+        id: mapItemView
         parent: map
         model: RadarReceiver.trackList
         delegate: MapQuickItem {
