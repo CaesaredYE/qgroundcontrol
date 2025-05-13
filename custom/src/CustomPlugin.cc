@@ -18,6 +18,20 @@ CustomPlugin::CustomPlugin(QGCApplication *app, QGCToolbox *toolbox)
     qmlRegisterSingletonInstance("RadarReceiver", 1, 0, "RadarReceiver", new RadarReceiver(this));
 }
 
+void CustomPlugin::sendTargetLocation(Vehicle *vehicle, float lat, float lon, float alt)
+{
+    vehicle->sendMavCommand(MAV_COMP_ID_UDP_BRIDGE,
+                               MAV_CMD_USER_1,
+                               false,
+                               NAN,
+                               NAN,
+                               NAN,
+                               NAN,
+                               lat,
+                               lon,
+                               alt);
+}
+
 void CustomPlugin::sendPositionMsg(Vehicle *vehicle, const QString& x, const QString& y, const QString& z)
 {
     qDebug() << "toDouble x:" << QString::number(x.toDouble(), 'f', 10);

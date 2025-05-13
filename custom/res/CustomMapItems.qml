@@ -28,8 +28,10 @@ Item {
     id: radar
     property var    map
     property bool   largeMapView
-    property var    radarCenter: QtPositioning.coordinate(30.2, 114)
+    property var    radarCenter: QtPositioning.coordinate(30.276150, 114.070351)
     property var    selectedTrack: null
+    property var    targetBatch: null
+    property var    _activeVehicle: QGroundControl.multiVehicleManager.activeVehicle
 
     Component.onCompleted: {
         if (map) {
@@ -46,10 +48,15 @@ Item {
             for (let i = 0; i < RadarReceiver.trackList.length; ++i) {
                 let item = RadarReceiver.trackList[i]
                 console.log(`Track ${i}:`, JSON.stringify(item))
+
+                if (radar.targetBatch && item.batch == radar.targetBatch && item.existFlag) {
+                    QGroundControl.corePlugin.sendTargetLocation(_activeVehicle, item.lat, item.lon, item.alt);
+                }
             }
         }
     }
 
+    // 目标列表
     MapItemView {
         parent: map
         model: RadarReceiver.trackList
@@ -71,7 +78,7 @@ Item {
                     anchors.fill: parent
                     onClicked: {
                         console.log("Clicked Track:", modelData.batch)
-                        radar.selectedTrack = modelData
+                        radar.selectedTrack = radar.selectedTrack ? null: modelData
                     }
                 }
             }
@@ -95,8 +102,8 @@ Item {
         sourceItem: Button {
             text: "选为目标"
             onClicked: {
-                console.log("Select Track:", radar.selectedTrack.batch)
-                // 你可以在这里调用 C++ 的方法或发送信号
+                console.log("Target Track batch:", radar.selectedTrack.batch)
+                radar.targetBatch = radar.selectedTrack.batch
                 radar.selectedTrack = null
             }
         }
@@ -121,7 +128,7 @@ Item {
         Canvas {
             id: radarCanvas
             anchors.fill: parent
-            property real sweepAngle: 40
+            property real sweepAngle: 30
             property real rotationAngle: 0
 
             onPaint: {
