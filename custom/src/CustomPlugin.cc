@@ -19,8 +19,9 @@ CustomPlugin::CustomPlugin(QGCApplication *app, QGCToolbox *toolbox)
     qmlRegisterSingletonInstance("RadarReceiver", 1, 0, "RadarReceiver", _radarReceiver);
 }
 
-void CustomPlugin::sendPositionCmd(Vehicle *vehicle, const QString& x, const QString& y, const QString& z)
+void CustomPlugin::sendLocationCmd(const QString& lat, const QString& lon, const QString& alt)
 {
+    Vehicle* vehicle = qgcApp()->toolbox()->multiVehicleManager()->activeVehicle();
     vehicle->sendMavCommandInt(MAV_COMP_ID_UDP_BRIDGE,
                                MAV_CMD_USER_1,
                                MAV_FRAME_GLOBAL,
@@ -29,13 +30,14 @@ void CustomPlugin::sendPositionCmd(Vehicle *vehicle, const QString& x, const QSt
                                NAN,
                                NAN,
                                NAN,
-                               x.toDouble(),
-                               y.toDouble(),
-                               z.toFloat());
+                               lat.toDouble(),
+                               lon.toDouble(),
+                               alt.toFloat());
 }
 
-void CustomPlugin::sendStopCmd(Vehicle *vehicle)
+void CustomPlugin::sendStopCmd()
 {
+    Vehicle* vehicle = qgcApp()->toolbox()->multiVehicleManager()->activeVehicle();
     vehicle->sendMavCommand(MAV_COMP_ID_UDP_BRIDGE,
                                MAV_CMD_USER_2,
                                false,
