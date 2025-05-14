@@ -52,33 +52,34 @@ ToolStripActionList {
             }
         }
     ]
+}
 
-    QGCPopupDialog {
-        id: locationDialog
-        title: qsTr("敌机坐标")
-        modal: true
+QGCPopupDialog {
+    id: locationDialog
+    title: qsTr("敌机坐标")
+    modal: true
 
-        GridLayout {
-            columnSpacing:  ScreenTools.defaultFontPixelWidth * 2
-            rowSpacing:  ScreenTools.defaultFontPixelWidth * 2
-            columns: 2
+    GridLayout {
+        columnSpacing:  ScreenTools.defaultFontPixelWidth * 2
+        rowSpacing:  ScreenTools.defaultFontPixelWidth * 2
+        columns: 2
 
-            QGCLabel { text: qsTr("纬度") }
-            QGCTextField { id: lat}
+        QGCLabel { text: qsTr("纬度") }
+        QGCTextField { id: lat}
 
-            QGCLabel { text: qsTr("经度") }
-            QGCTextField { id: lon }
+        QGCLabel { text: qsTr("经度") }
+        QGCTextField { id: lon }
 
-            QGCLabel { text: qsTr("高度") }
-            QGCTextField { id: alt }
-        }
+        QGCLabel { text: qsTr("高度") }
+        QGCTextField { id: alt }
+    }
 
-        QGCButton {
-            text: qsTr("发送")
-            enabled: _activeVehicle
-            onClicked: {
-                QGroundControl.corePlugin.sendLocationCmd(lat.text, lon.text, alt.text);
-            }
+    QGCButton {
+        text: qsTr("发送")
+        enabled: _activeVehicle
+        onClicked: {
+            QGroundControl.corePlugin.sendLocationCmd(lat.text, lon.text, alt.text);
         }
     }
 }
+
