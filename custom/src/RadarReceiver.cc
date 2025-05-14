@@ -108,8 +108,8 @@ void RadarReceiver::sendTrackToVehicle()
                                 false,
                                 NAN,
                                 NAN,
-                                NAN,
-                                NAN,
+                                target.batch,
+                                target.existFlag,
                                 target.lat,
                                 target.lon,
                                 target.alt);
