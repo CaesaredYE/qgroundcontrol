@@ -60,6 +60,7 @@ ToolStrip {
                     QGCButton {
                         text: qsTr("发送")
                         Layout.alignment:   Qt.AlignRight
+                        Layout.columnSpan:  2
                         onClicked: {
                             QGroundControl.corePlugin.sendLocationCmd(lat.text, lon.text, alt.text);
                         }
