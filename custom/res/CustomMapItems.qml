@@ -120,7 +120,7 @@ Item {
                 ctx.translate(width / 2, height / 2);
 
                 // === 1. 绘制同心圆 ===
-                ctx.strokeStyle = "rgba(255, 0, 0, 0.7)";
+                ctx.strokeStyle = "rgba(255, 0, 0, 0.9)";
                 ctx.lineWidth = 1;
                 var ringCount = 4; // 同心圆数量
                 var maxRadius = width / 2;
@@ -135,7 +135,7 @@ Item {
                 ctx.rotate(rotationAngle * Math.PI / 180);
 
                 var gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, maxRadius);
-                gradient.addColorStop(0, "rgba(0, 255, 0, 0.5)");
+                gradient.addColorStop(0, "rgba(0, 255, 0, 0.7)");
                 gradient.addColorStop(1, "rgba(0, 255, 0, 0)");
 
                 ctx.beginPath();

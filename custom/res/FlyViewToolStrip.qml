@@ -7,8 +7,11 @@
  *
  ****************************************************************************/
 
-import QtQml.Models 2.12
+import QtQuick                  2.11
 import QtQuick.Layouts          1.11
+import QtQuick.Dialogs          1.2
+
+import QtQml.Models 2.12
 
 import QGroundControl               1.0
 import QGroundControl.Controls      1.0
@@ -26,49 +29,44 @@ ToolStrip {
 
         onDisplayPreFlightChecklist: _root.displayPreFlightChecklist()
         onShowLocationDialog: {
-            _root.locationDialog.visible = true
+            sendLocation.createObject(mainWindow).open()
         }
     }
 
     model: flyViewToolStripActionList.model
 
-    QGCPopupDialog {
-        id: locationDialog
-        title: qsTr("敌机坐标")
-        modal: true
-        visible: false
+    Component {
+        id: sendLocation
 
-        ColumnLayout {
-            GridLayout {
-                columnSpacing:  ScreenTools.defaultFontPixelWidth
-                rowSpacing:  ScreenTools.defaultFontPixelWidth
-                columns: 2
+        QGCPopupDialog {
+            title: qsTr("敌机坐标")
+            buttons:    StandardButton.Close
 
-                QGCLabel { text: qsTr("纬度") }
-                QGCTextField { id: lat}
+            ColumnLayout {
+                GridLayout {
+                    columnSpacing:  ScreenTools.defaultFontPixelWidth
+                    rowSpacing:  ScreenTools.defaultFontPixelWidth
+                    columns: 2
 
-                QGCLabel { text: qsTr("经度") }
-                QGCTextField { id: lon }
+                    QGCLabel { text: qsTr("纬度") }
+                    QGCTextField { id: lat}
 
-                QGCLabel { text: qsTr("高度") }
-                QGCTextField { id: alt }
-            }
+                    QGCLabel { text: qsTr("经度") }
+                    QGCTextField { id: lon }
 
-            RowLayout {
-                Layout.alignment: Qt.AlignRight
-                spacing: ScreenTools.defaultFontPixelWidth
+                    QGCLabel { text: qsTr("高度") }
+                    QGCTextField { id: alt }
 
-                QGCButton {
-                    text: qsTr("取消")
-                    onClicked: locationDialog.visible = false
-                }
-
-                QGCButton {
-                    text: qsTr("发送")
-                    onClicked: {
-                        QGroundControl.corePlugin.sendLocationCmd(lat.text, lon.text, alt.text);
+                    QGCButton {
+                        text: qsTr("发送")
+                        Layout.alignment:   Qt.AlignRight
+                        onClicked: {
+                            QGroundControl.corePlugin.sendLocationCmd(lat.text, lon.text, alt.text);
+                        }
                     }
                 }
+
+
             }
         }
     }
