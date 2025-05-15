@@ -40,6 +40,6 @@ private:
 
     QMap<quint32, TrackInfo> _tracks;
 
-    quint32 _targetBatch;
+    quint32 _targetBatch = 0;
     void sendTrackToVehicle();
 };

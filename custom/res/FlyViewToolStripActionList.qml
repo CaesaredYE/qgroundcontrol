@@ -8,15 +8,14 @@
  ****************************************************************************/
 
 import QtQml.Models 2.12
-import QtQuick.Layouts          1.11
 import QGroundControl           1.0
 import QGroundControl.Controls  1.0
-import QGroundControl.ScreenTools   1.0
 
 ToolStripActionList {
     id: _root
 
     signal displayPreFlightChecklist
+    signal showLocationDialog
 
     model: [
         ToolStripAction {
@@ -44,42 +43,10 @@ ToolStripActionList {
         ToolStripAction {
             text:       qsTr("发送坐标")
             iconSource: "/res/CustomLocation.svg"
-            visible:    _guidedController.showTakeoff
-            enabled:    _guidedController.showTakeoff
+            visible:    _guidedController._activeVehicle
+            enabled:    _guidedController._activeVehicle
 
-            onTriggered: {
-                locationDialog.visible = true
-            }
+            onTriggered: showLocationDialog()
         }
     ]
 }
-
-QGCPopupDialog {
-    id: locationDialog
-    title: qsTr("敌机坐标")
-    modal: true
-
-    GridLayout {
-        columnSpacing:  ScreenTools.defaultFontPixelWidth * 2
-        rowSpacing:  ScreenTools.defaultFontPixelWidth * 2
-        columns: 2
-
-        QGCLabel { text: qsTr("纬度") }
-        QGCTextField { id: lat}
-
-        QGCLabel { text: qsTr("经度") }
-        QGCTextField { id: lon }
-
-        QGCLabel { text: qsTr("高度") }
-        QGCTextField { id: alt }
-    }
-
-    QGCButton {
-        text: qsTr("发送")
-        enabled: _activeVehicle
-        onClicked: {
-            QGroundControl.corePlugin.sendLocationCmd(lat.text, lon.text, alt.text);
-        }
-    }
-}
-

@@ -61,11 +61,13 @@ void RadarReceiver::readData() {
                 qDebug() << "批号" << info.batch << "纬度" << info.lat  << "经度" << info.lon << "高度" << info.alt << "存在标识" << info.existFlag;
 
                 _tracks[info.batch] = info;
+
+                if (_targetBatch && info.batch == _targetBatch) {
+                    sendTrackToVehicle();
+                }
             }
 
             emit trackListChanged();
-
-            sendTrackToVehicle();
         }
     }
 }
@@ -93,25 +95,28 @@ void RadarReceiver::setTargetBatch(quint32 batch)
 
 void RadarReceiver::sendTrackToVehicle()
 {
-    if (_targetBatch) {
-        TrackInfo target = _tracks[_targetBatch];
-
-        Vehicle* vehicle = qgcApp()->toolbox()->multiVehicleManager()->activeVehicle();
-        if (!vehicle) {
-            return;
-        }
-
-        qDebug() << "发送目标位置至车辆：" << _targetBatch << target.lat << target.lon << target.alt;
-
-        vehicle->sendMavCommand(MAV_COMP_ID_UDP_BRIDGE,
-                                MAV_CMD_USER_1,
-                                false,
-                                NAN,
-                                NAN,
-                                target.batch,
-                                target.existFlag,
-                                target.lat,
-                                target.lon,
-                                target.alt);
+    if (_targetBatch == 0) {
+        return;
     }
+
+    TrackInfo target = _tracks[_targetBatch];
+
+    Vehicle* vehicle = qgcApp()->toolbox()->multiVehicleManager()->activeVehicle();
+    if (!vehicle) {
+        return;
+    }
+
+    qDebug() << "发送目标位置至车辆：" << _targetBatch << target.lat << target.lon << target.alt;
+
+    vehicle->sendMavCommand(MAV_COMP_ID_UDP_BRIDGE,
+                            MAV_CMD_USER_1,
+                            false,
+                            NAN,
+                            NAN,
+                            target.batch,
+                            target.existFlag,
+                            target.lat,
+                            target.lon,
+                            target.alt);
+    
 }

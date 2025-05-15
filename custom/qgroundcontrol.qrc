@@ -212,7 +212,6 @@
 		<file alias="QGroundControl/FlightDisplay/FlyViewMap.qml">../src/FlightDisplay/FlyViewMap.qml</file>
 		<file alias="QGroundControl/FlightDisplay/FlyViewMissionCompleteDialog.qml">../src/FlightDisplay/FlyViewMissionCompleteDialog.qml</file>
 		<file alias="QGroundControl/FlightDisplay/FlyViewPreFlightChecklistPopup.qml">../src/FlightDisplay/FlyViewPreFlightChecklistPopup.qml</file>
-		<file alias="QGroundControl/FlightDisplay/FlyViewToolStrip.qml">../src/FlightDisplay/FlyViewToolStrip.qml</file>
 		<file alias="QGroundControl/FlightDisplay/FlyViewVideo.qml">../src/FlightDisplay/FlyViewVideo.qml</file>
 		<file alias="QGroundControl/FlightDisplay/OnScreenGimbalController.qml">../src/FlightDisplay/OnScreenGimbalController.qml</file>
 		<file alias="QGroundControl/FlightDisplay/FlyViewWidgetLayer.qml">../src/FlightDisplay/FlyViewWidgetLayer.qml</file>
