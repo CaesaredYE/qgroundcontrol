@@ -33,6 +33,9 @@ private slots:
     void readData();
 
 private:
+    void sendTrackToVehicle();
+
+private:
     QUdpSocket* _udpSocket = nullptr;
     QHostAddress _remoteHost = QHostAddress("localhost");
     quint16 _remotePort = 12580;
@@ -41,5 +44,4 @@ private:
     QMap<quint32, TrackInfo> _tracks;
 
     quint32 _targetBatch = 0;
-    void sendTrackToVehicle();
 };

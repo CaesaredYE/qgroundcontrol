@@ -8,8 +8,11 @@
  *   @brief Custom QGCCorePlugin Implementation
  *   @author Gus Grubba <gus@auterion.com>
  */
+#include <QtQml>
+#include <QQmlEngine>
 
 #include "CustomPlugin.h"
+#include "QmlComponentInfo.h"
 
 CustomPlugin::CustomPlugin(QGCApplication *app, QGCToolbox *toolbox)
     : QGCCorePlugin(app, toolbox)
@@ -17,6 +20,34 @@ CustomPlugin::CustomPlugin(QGCApplication *app, QGCToolbox *toolbox)
     _radarReceiver = new RadarReceiver(this);
     _radarReceiver->start(); 
     qmlRegisterSingletonInstance("RadarReceiver", 1, 0, "RadarReceiver", _radarReceiver);
+}
+
+
+void CustomPlugin::_addSettingsEntry(const QString& title, const char* qmlFile, const char* iconFile)
+{
+    Q_CHECK_PTR(qmlFile);
+    _customSettingsList.append(QVariant::fromValue(
+        new QmlComponentInfo(title,
+                             QUrl::fromUserInput(qmlFile),
+                             iconFile == nullptr ? QUrl() : QUrl::fromUserInput(iconFile),
+                             this)));
+}
+
+QVariantList&
+CustomPlugin::settingsPages()
+{
+    if(_customSettingsList.isEmpty()) {
+        _addSettingsEntry(tr("General"),     "qrc:/qml/GeneralSettings.qml",     "qrc:/res/gear-white.svg");
+        _addSettingsEntry(tr("Comm Links"),  "qrc:/qml/LinkSettings.qml",        "qrc:/res/waves.svg");
+        _addSettingsEntry(tr("Offline Maps"),"qrc:/qml/OfflineMap.qml",          "qrc:/res/waves.svg");
+        _addSettingsEntry(tr("MAVLink"),     "qrc:/qml/MavlinkSettings.qml",     "qrc:/res/waves.svg");
+        _addSettingsEntry(tr("Console"),     "qrc:/qml/QGroundControl/Controls/AppMessages.qml");
+        _addSettingsEntry(tr("雷达"),     "qrc:/qml/RadarSettings.qml");
+#if defined(QT_DEBUG)
+        _addSettingsEntry(tr("Mock Link"),   "qrc:/qml/MockLink.qml");
+#endif
+    }
+    return _customSettingsList;
 }
 
 void CustomPlugin::sendLocationCmd(const QString& lat, const QString& lon, const QString& alt)
@@ -39,13 +70,13 @@ void CustomPlugin::sendStopCmd()
 {
     Vehicle* vehicle = qgcApp()->toolbox()->multiVehicleManager()->activeVehicle();
     vehicle->sendMavCommand(MAV_COMP_ID_UDP_BRIDGE,
-                               MAV_CMD_USER_2,
-                               false,
-                               NAN,
-                               NAN,
-                               NAN,
-                               NAN,
-                               NAN,
-                               NAN,
-                               NAN);
+                            MAV_CMD_USER_2,
+                            false,
+                            NAN,
+                            NAN,
+                            NAN,
+                            NAN,
+                            NAN,
+                            NAN,
+                            NAN);
 }

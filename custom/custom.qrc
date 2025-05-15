@@ -9,5 +9,6 @@
         <file alias="QGroundControl/FlightMap/CustomMapItems.qml">res/CustomMapItems.qml</file>
         <file alias="QGroundControl/FlightDisplay/FlyViewToolStrip.qml">res/FlyViewToolStrip.qml</file>
         <file alias="QGroundControl/FlightDisplay/FlyViewToolStripActionList.qml">res/FlyViewToolStripActionList.qml</file>
+        <file alias="RadarSettings.qml">res/RadarSettings.qml</file>
     </qresource>
 </RCC>

@@ -22,10 +22,16 @@ class CustomPlugin : public QGCCorePlugin
 public:
     CustomPlugin(QGCApplication *app, QGCToolbox *toolbox);
 
+    QVariantList&    settingsPages                   (void) final;
+
     Q_INVOKABLE void sendLocationCmd(const QString& lat, const QString& lon, const QString& alt);
 
     Q_INVOKABLE void sendStopCmd();
 
 private:
+    void _addSettingsEntry(const QString& title, const char* qmlFile, const char* iconFile = nullptr);
+
+private:
     RadarReceiver* _radarReceiver = nullptr;
+    QVariantList    _customSettingsList;
 };
