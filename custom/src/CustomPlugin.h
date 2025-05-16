@@ -12,8 +12,8 @@
 #pragma once
 
 #include "QGCCorePlugin.h"
-#include "Vehicle.h"
 #include "RadarReceiver.h"
+#include "CustomSettingsManager.h"
 
 class CustomPlugin : public QGCCorePlugin
 {
@@ -22,7 +22,11 @@ class CustomPlugin : public QGCCorePlugin
 public:
     CustomPlugin(QGCApplication *app, QGCToolbox *toolbox);
 
+    SettingsManager* settingsManager() override { return _settingsManager; }
+
     QVariantList&    settingsPages                   (void) final;
+
+    void connectRadar();
 
     Q_INVOKABLE void sendLocationCmd(const QString& lat, const QString& lon, const QString& alt);
 
@@ -33,5 +37,6 @@ private:
 
 private:
     RadarReceiver* _radarReceiver = nullptr;
-    QVariantList    _customSettingsList;
+    CustomSettingsManager* _settingsManager;
+    QVariantList   _customSettingsList;
 };
