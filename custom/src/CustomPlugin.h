@@ -24,10 +24,11 @@ public:
 
     QVariantList&    settingsPages                   (void) final;
 
-    void connectRadar();
+    Q_INVOKABLE void connectRadar();
+    Q_INVOKABLE void startSurvey();
+    Q_INVOKABLE void stopSurvey();
 
     Q_INVOKABLE void sendLocationCmd(const QString& lat, const QString& lon, const QString& alt);
-
     Q_INVOKABLE void sendStopCmd();
 
 private:

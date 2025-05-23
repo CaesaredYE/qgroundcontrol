@@ -47,6 +47,20 @@ ToolStripActionList {
             enabled:    _guidedController._activeVehicle
 
             onTriggered: showLocationDialog()
+        },
+        ToolStripAction {
+            text:       qsTr("开启探测")
+            iconSource: "/res/CustomRadar.svg"
+            onTriggered: {
+                QGroundControl.corePlugin.startSurvey();
+            }
+        },
+        ToolStripAction {
+            text:       qsTr("停止探测")
+            iconSource: "/res/CustomStop.svg"
+            onTriggered: {
+                QGroundControl.corePlugin.stopSurvey();
+            }
         }
     ]
 }

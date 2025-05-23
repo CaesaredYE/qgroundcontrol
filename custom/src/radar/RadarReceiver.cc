@@ -19,16 +19,20 @@ void RadarReceiver::start() {
 
     connect(_udpSocket, &QUdpSocket::readyRead, this, &RadarReceiver::readData);
 
-    const uint8_t data[10] = {0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0xAA};
-    QByteArray byteArray(reinterpret_cast<const char*>(data), sizeof(data));
-
-    _udpSocket->writeDatagram(byteArray, _remoteHost, _remotePort);
+    const uint8_t data[] = {0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0xAA};
 
     QTimer* pollTimer = new QTimer(this);
     connect(pollTimer, &QTimer::timeout, this, [=]() {
-        _udpSocket->writeDatagram(byteArray, _remoteHost, _remotePort);
+        writeData(data);
     });
+    writeData(data);
+
     pollTimer->start(1000 * 60);
+}
+
+void RadarReceiver::writeData(const uint8_t* data) {
+    QByteArray byteArray(reinterpret_cast<const char*>(data), sizeof(data));
+    _udpSocket->writeDatagram(byteArray, _remoteHost, _remotePort);
 }
 
 void RadarReceiver::readData() {

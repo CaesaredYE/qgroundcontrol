@@ -19,7 +19,7 @@ CustomPlugin::CustomPlugin(QGCApplication *app, QGCToolbox *toolbox)
 {
     _radarReceiver = new RadarReceiver(this);
     qmlRegisterSingletonInstance("RadarReceiver", 1, 0, "RadarReceiver", _radarReceiver);
-
+    _radarReceiver->start();
     // _radarSettings = new RadarSettings(this);
     // qmlRegisterSingletonInstance("Radar.Settings", 1, 0, "RadarSettings", _radarSettings);
 }
@@ -50,6 +50,36 @@ QVariantList& CustomPlugin::settingsPages()
 void CustomPlugin::connectRadar()
 {
     _radarReceiver->start();
+}
+
+void CustomPlugin::startSurvey()
+{
+    uint8_t data[] = {
+        0xaa, 0xaa, 0xaa, 0xaa,
+        0x0b, 0x00, 0x00, 0x00,
+        0x14, 0x01, 0x01, 0xdb,
+        0x00, 0x00, 0x00, 0x00,
+        0xa5, 0x10, 0x01, 0x40,
+        0x3f, 0xff, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x0c, 0x9b, 0x00, 0x00
+    };
+    _radarReceiver->writeData(data);
+}
+
+void CustomPlugin::stopSurvey()
+{
+    uint8_t data[] = {
+        0xaa, 0xaa, 0xaa, 0xaa,
+        0x0b, 0x00, 0x00, 0x00,
+        0x14, 0x01, 0x01, 0xe9,
+        0x00, 0x00, 0x00, 0x00,
+        0xa5, 0x10, 0x01, 0x40,
+        0x3f, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x12, 0xa2, 0x00, 0x00
+    };
+    _radarReceiver->writeData(data);
 }
 
 void CustomPlugin::sendLocationCmd(const QString& lat, const QString& lon, const QString& alt)

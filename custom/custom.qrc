@@ -1,9 +1,10 @@
 <RCC>
     <qresource prefix="/res">
-        <file alias="QGCLogoFull">res/logo.svg</file>
-        <file alias="QGCLogoWhite">res/logo.svg</file>
-        <file alias="CustomStop.svg">res/stop.svg</file>
-        <file alias="CustomLocation.svg">res/location.svg</file>
+        <file alias="QGCLogoFull">res/icons/logo.svg</file>
+        <file alias="QGCLogoWhite">res/icons/logo.svg</file>
+        <file alias="CustomStop.svg">res/icons/stop.svg</file>
+        <file alias="CustomLocation.svg">res/icons/location.svg</file>
+        <file alias="CustomRadar.svg">res/icons/radar.svg</file>
     </qresource>
     <qresource prefix="/qml">
         <file alias="QGroundControl/FlightDisplay/FlyViewToolStrip.qml">res/FlyViewToolStrip.qml</file>

@@ -70,6 +70,20 @@ Item {
         }
     }
 
+    // 遮罩
+    MapQuickItem {
+        parent: map
+        coordinate: map.center
+        anchorPoint.x: map.width / 2
+        anchorPoint.y: map.height / 2
+        sourceItem: Rectangle {
+            width: map.width
+            height: map.height
+            color: Qt.rgba(0, 0, 0, 0.5)
+        }
+        z: QGroundControl.zOrderMapItems - 1
+    }
+
     // 选为目标按钮
     MapQuickItem {
         parent: map
@@ -105,14 +119,6 @@ Item {
         id: radarScan
         width: 1024
         height: 1024
-
-        Rectangle {
-            width: 1024
-            height: 1024
-            radius: 512
-            color: Qt.rgba(0,0,0,0.5)
-            anchors.centerIn: parent
-        }
         
         Canvas {
             id: radarCanvas
