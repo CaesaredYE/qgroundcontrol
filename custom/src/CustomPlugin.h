@@ -13,7 +13,7 @@
 
 #include "QGCCorePlugin.h"
 #include "RadarReceiver.h"
-#include "CustomSettingsManager.h"
+#include "RadarSettings.h"
 
 class CustomPlugin : public QGCCorePlugin
 {
@@ -21,8 +21,6 @@ class CustomPlugin : public QGCCorePlugin
 
 public:
     CustomPlugin(QGCApplication *app, QGCToolbox *toolbox);
-
-    SettingsManager* settingsManager() override { return _settingsManager; }
 
     QVariantList&    settingsPages                   (void) final;
 
@@ -36,7 +34,8 @@ private:
     void _addSettingsEntry(const QString& title, const char* qmlFile, const char* iconFile = nullptr);
 
 private:
-    RadarReceiver* _radarReceiver = nullptr;
-    CustomSettingsManager* _settingsManager;
     QVariantList   _customSettingsList;
+
+    RadarReceiver* _radarReceiver = nullptr;
+    RadarSettings* _radarSettings = nullptr;
 };

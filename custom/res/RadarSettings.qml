@@ -1,101 +1,45 @@
-/****************************************************************************
- *
- * (c) 2009-2020 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
- *
- * QGroundControl is licensed according to the terms in the file
- * COPYING.md in the root of the source code directory.
- *
- ****************************************************************************/
+import QtQuick 2.15
+import QtQuick.Controls 2.15
+import Radar.Settings 1.0
 
-import QtQuick          2.3
-import QtQuick.Controls 1.2
-import QtQuick.Dialogs  1.2
-import QtQuick.Layouts  1.2
+Item {
+    Column {
+        anchors.margins: 20
+        spacing: 20
 
-import QGroundControl               1.0
-import QGroundControl.Controls      1.0
-import QGroundControl.ScreenTools   1.0
-import QGroundControl.Palette       1.0
+        TextField {
+            placeholderText: "雷达 IP"
+            text: RadarSettings.radarIP.value
+            onTextChanged: RadarSettings.radarIP.value = text
+        }
 
-Rectangle {
-    id:                 _radarRoot
-    color:              qgcPal.window
-    anchors.fill:       parent
-    anchors.margins:    ScreenTools.defaultFontPixelWidth
+        TextField {
+            placeholderText: "雷达端口"
+            text: RadarSettings.radarPort.value.toString()
+            inputMethodHints: Qt.ImhDigitsOnly
+            onTextChanged: RadarSettings.radarPort.value = parseInt(text)
+        }
 
-    QGCPalette {
-        id:                 qgcPal
-        colorGroupEnabled:  enabled
-    }
+        TextField {
+            placeholderText: "本地监听端口"
+            text: RadarSettings.radarLocalPort.value.toString()
+            inputMethodHints: Qt.ImhDigitsOnly
+            onTextChanged: RadarSettings.radarLocalPort.value = parseInt(text)
+        }
 
-    QGCFlickable {
-        clip:               true
-        anchors.top:        parent.top
-        width:              parent.width
-        height:             parent.height - buttonRow.height
-        contentHeight:      settingsColumn.height
-        contentWidth:       _radarRoot.width
-        flickableDirection: Flickable.VerticalFlick
+        TextField {
+            placeholderText: "雷达纬度"
+            text: RadarSettings.radarLatitude.value.toString()
+            onTextChanged: RadarSettings.radarLatitude.value = parseFloat(text)
+        }
 
-        Column {
-            id:                 settingsColumn
-            width:              _radarRoot.width
-            anchors.margins:    ScreenTools.defaultFontPixelWidth
-            spacing:            ScreenTools.defaultFontPixelHeight
-
-            GridLayout {
-                columns:        2
-                columnSpacing:  ScreenTools.defaultFontPixelHeight
-                rowSpacing:     ScreenTools.defaultFontPixelHeight
-
-                QGCLabel { text: qsTr("Name") }
-                QGCTextField {
-                    id:                     nameField
-                    Layout.preferredWidth:  _secondColumnWidth
-                    Layout.fillWidth:       true
-                    text:                   editingConfig.name
-                    placeholderText:        qsTr("Enter name")
-                }
-
-                QGCLabel { text: qsTr("Name") }
-                QGCTextField {
-                    id:                     nameField
-                    Layout.preferredWidth:  _secondColumnWidth
-                    Layout.fillWidth:       true
-                    text:                   editingConfig.name
-                    placeholderText:        qsTr("Enter name")
-                }
-
-                QGCLabel { text: qsTr("Name") }
-                QGCTextField {
-                    id:                     nameField
-                    Layout.preferredWidth:  _secondColumnWidth
-                    Layout.fillWidth:       true
-                    text:                   editingConfig.name
-                    placeholderText:        qsTr("Enter name")
-                }
-
-                QGCLabel { text: qsTr("Name") }
-                QGCTextField {
-                    id:                     nameField
-                    Layout.preferredWidth:  _secondColumnWidth
-                    Layout.fillWidth:       true
-                    text:                   editingConfig.name
-                    placeholderText:        qsTr("Enter name")
-                }
-
-                QGCLabel { text: qsTr("Name") }
-                QGCTextField {
-                    id:                     nameField
-                    Layout.preferredWidth:  _secondColumnWidth
-                    Layout.fillWidth:       true
-                    text:                   editingConfig.name
-                    placeholderText:        qsTr("Enter name")
-                }
-
-            }
+        TextField {
+            placeholderText: "雷达经度"
+            text: RadarSettings.radarLongitude.value.toString()
+            onTextChanged: RadarSettings.radarLongitude.value = parseFloat(text)
         }
     }
+
 
     Row {
         id:                 buttonRow
@@ -106,7 +50,7 @@ Rectangle {
 
         QGCButton {
             text:       qsTr("连接")
-            onClicked:  QGroundControl.linkManager.createConnectedLink()
+            onClicked:  QGroundControl.corePlugin.connectRadar()
         }
         QGCButton {
             text:       qsTr("取消连接")

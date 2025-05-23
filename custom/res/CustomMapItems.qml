@@ -106,6 +106,14 @@ Item {
         width: 1024
         height: 1024
 
+        Rectangle {
+            width: 1024
+            height: 1024
+            radius: 512
+            color: Qt.rgba(0,0,0,0.5)
+            anchors.centerIn: parent
+        }
+        
         Canvas {
             id: radarCanvas
             anchors.fill: parent

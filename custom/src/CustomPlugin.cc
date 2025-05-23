@@ -17,7 +17,11 @@
 CustomPlugin::CustomPlugin(QGCApplication *app, QGCToolbox *toolbox)
     : QGCCorePlugin(app, toolbox)
 {
+    _radarReceiver = new RadarReceiver(this);
+    qmlRegisterSingletonInstance("RadarReceiver", 1, 0, "RadarReceiver", _radarReceiver);
 
+    // _radarSettings = new RadarSettings(this);
+    // qmlRegisterSingletonInstance("Radar.Settings", 1, 0, "RadarSettings", _radarSettings);
 }
 
 void CustomPlugin::_addSettingsEntry(const QString& title, const char* qmlFile, const char* iconFile)
@@ -38,15 +42,14 @@ QVariantList& CustomPlugin::settingsPages()
         _addSettingsEntry(tr("Offline Maps"),"qrc:/qml/OfflineMap.qml",          "qrc:/res/waves.svg");
         _addSettingsEntry(tr("MAVLink"),     "qrc:/qml/MavlinkSettings.qml",     "qrc:/res/waves.svg");
         _addSettingsEntry(tr("Console"),     "qrc:/qml/QGroundControl/Controls/AppMessages.qml");
-        _addSettingsEntry(tr("雷达"),         "qrc:/qml/RadarSettings.qml");
+        _addSettingsEntry(tr("Radar"),       "qrc:/qml/RadarSettings.qml");
     }
     return _customSettingsList;
 }
 
-void connectRadar(){
-    _radarReceiver = new RadarReceiver(this);
-    _radarReceiver->start(); 
-    qmlRegisterSingletonInstance("RadarReceiver", 1, 0, "RadarReceiver", _radarReceiver);
+void CustomPlugin::connectRadar()
+{
+    _radarReceiver->start();
 }
 
 void CustomPlugin::sendLocationCmd(const QString& lat, const QString& lon, const QString& alt)
