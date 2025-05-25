@@ -38,7 +38,7 @@ private:
 
 private:
     QUdpSocket* _udpSocket = nullptr;
-    QHostAddress _remoteHost = QHostAddress("localhost");
+    QHostAddress _remoteHost = QHostAddress("192.168.0.100");
     quint16 _remotePort = 12580;
     quint16 _localPort = 8000;
 
