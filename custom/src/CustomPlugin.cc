@@ -64,7 +64,7 @@ void CustomPlugin::startSurvey()
         0x00, 0x00, 0x00, 0x00,
         0x00, 0x00
     };
-    _radarReceiver->writeData(data);
+    _radarReceiver->writeData(data, sizeof(data));
 }
 
 void CustomPlugin::stopSurvey()
@@ -79,7 +79,7 @@ void CustomPlugin::stopSurvey()
         0x00, 0x00, 0x00, 0x00,
         0x00, 0x00
     };
-    _radarReceiver->writeData(data);
+    _radarReceiver->writeData(data, sizeof(data));
 }
 
 void CustomPlugin::sendLocationCmd(const QString& lat, const QString& lon, const QString& alt)

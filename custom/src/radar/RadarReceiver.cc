@@ -23,16 +23,16 @@ void RadarReceiver::start() {
 
     QTimer* pollTimer = new QTimer(this);
     connect(pollTimer, &QTimer::timeout, this, [=]() {
-        writeData(data);
+        writeData(data, sizeof(data));
     });
-    writeData(data);
+    writeData(data, sizeof(data));
 
     pollTimer->start(1000 * 60);
 }
 
-void RadarReceiver::writeData(const uint8_t* data) {
-    QByteArray byteArray(reinterpret_cast<const char*>(data), sizeof(data));
-    qDebug() << "发送雷达指令：" << QString(byteArray.toHex());
+void RadarReceiver::writeData(const uint8_t* data, int length) {
+    QByteArray byteArray(reinterpret_cast<const char*>(data), length);
+    qDebug() << "发送雷达指令：" << byteArray.toHex();
     _udpSocket->writeDatagram(byteArray, _remoteHost, _remotePort);
 }
 

@@ -23,7 +23,7 @@ public:
     QVariantList trackList() const;
 
     void start();
-    void writeData(const uint8_t* data);
+    void writeData(const uint8_t* data, int length);
 
     Q_INVOKABLE void setTargetBatch(quint32 batch);
 
