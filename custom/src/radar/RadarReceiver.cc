@@ -32,6 +32,7 @@ void RadarReceiver::start() {
 
 void RadarReceiver::writeData(const uint8_t* data) {
     QByteArray byteArray(reinterpret_cast<const char*>(data), sizeof(data));
+    qDebug() << "发送雷达指令：" << byteArray.toHex(' ');
     _udpSocket->writeDatagram(byteArray, _remoteHost, _remotePort);
 }
 
