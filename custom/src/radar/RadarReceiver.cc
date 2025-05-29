@@ -32,7 +32,7 @@ void RadarReceiver::start() {
 
 void RadarReceiver::writeData(const uint8_t* data, int length) {
     QByteArray byteArray(reinterpret_cast<const char*>(data), length);
-    qDebug() << "发送雷达指令：" << byteArray.toHex();
+    qDebug() << "Send radar command:" << byteArray.toHex();
     _udpSocket->writeDatagram(byteArray, _remoteHost, _remotePort);
 }
 
@@ -43,12 +43,12 @@ void RadarReceiver::readData() {
         qint64 bytesRead = _udpSocket->readDatagram(datagram.data(), datagram.size());
 
         if (bytesRead == -1) {
-            qWarning() << "读取失败：" << _udpSocket->errorString();
+            qWarning() << "receive fail:" << _udpSocket->errorString();
         }
 
         // 航迹报文
         if (datagram.size() >= 56 && datagram.constData()[4] == 0x01) {
-            qDebug() << "收到航迹报文：" << datagram.toHex();
+            qDebug() << "received:" << datagram.toHex();
 
             quint16 trackCount;
             memcpy(&trackCount, datagram.constData() + 8, sizeof(quint16));
@@ -93,7 +93,7 @@ QVariantList RadarReceiver::trackList() const {
 
 void RadarReceiver::setTargetBatch(quint32 batch)
 {
-    qDebug() << "设置目标batch：" << batch;
+    qDebug() << "set target batch:" << batch;
     _targetBatch = batch;
     sendTrackToVehicle();
 }
@@ -111,7 +111,7 @@ void RadarReceiver::sendTrackToVehicle()
         return;
     }
 
-    qDebug() << "发送目标位置至车辆：" << _targetBatch << target.lat << target.lon << target.alt;
+    qDebug() << "set to vehicle:" << _targetBatch << target.lat << target.lon << target.alt;
 
     vehicle->sendMavCommand(MAV_COMP_ID_UDP_BRIDGE,
                             MAV_CMD_USER_1,
