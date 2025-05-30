@@ -13,7 +13,6 @@
 
 #include "QGCCorePlugin.h"
 #include "RadarReceiver.h"
-#include "RadarSettings.h"
 
 class CustomPlugin : public QGCCorePlugin
 {
@@ -21,8 +20,6 @@ class CustomPlugin : public QGCCorePlugin
 
 public:
     CustomPlugin(QGCApplication *app, QGCToolbox *toolbox);
-
-    QVariantList&    settingsPages                   (void) final;
 
     Q_INVOKABLE void connectRadar();
     Q_INVOKABLE void startSurvey();
@@ -32,11 +29,5 @@ public:
     Q_INVOKABLE void sendStopCmd();
 
 private:
-    void _addSettingsEntry(const QString& title, const char* qmlFile, const char* iconFile = nullptr);
-
-private:
-    QVariantList   _customSettingsList;
-
     RadarReceiver* _radarReceiver = nullptr;
-    RadarSettings* _radarSettings = nullptr;
 };
