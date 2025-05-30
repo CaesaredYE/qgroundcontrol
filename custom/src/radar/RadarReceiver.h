@@ -8,10 +8,16 @@
 
 struct TrackInfo {
     quint32 batch; // 批号
+    quint16 existFlag; // 存在标识
+
+    float compass; // 方位
+    float distance; // 距离
+    float course; // 航向
+    float speed; // 航速
+    
     float lat; // 纬度
     float lon; // 经度
     float alt; // 高度
-    quint16 existFlag; // 存在标识
 };
 
 class RadarReceiver : public QObject {

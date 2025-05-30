@@ -29,7 +29,6 @@ Item {
     property var    map
     property bool   largeMapView
     property var    radarCenter: QtPositioning.coordinate(30.276150, 114.070351)
-    property var    selectedTrack: null
 
     Component.onCompleted: {
         if (map) {
@@ -42,28 +41,92 @@ Item {
         id: mapItemView
         parent: map
         model: RadarReceiver.trackList
+        z: QGroundControl.zOrderMapItems + 1
         delegate: MapQuickItem {
             parent: map
             visible: modelData.existFlag === 1
-            anchorPoint.x: 5
-            anchorPoint.y: 5
             coordinate: QtPositioning.coordinate(modelData.lat, modelData.lon)
-            z: QGroundControl.zOrderMapItems
-            sourceItem: Rectangle {
-                width: 20
-                height: 20
-                radius: 20
-                color: "red"
-                border.color: "black"
-                border.width: 1
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        if (radar.selectedTrack && (radar.selectedTrack.batch === modelData.batch)){
-                            radar.selectedTrack = null;
-                        } else {
-                            radar.selectedTrack = modelData;
+            anchorPoint.x: targetRect.width / 2
+            anchorPoint.y: targetRect.width / 2
+            z: QGroundControl.zOrderMapItems + 1
+
+            sourceItem: Item {
+                Rectangle {
+                    id: targetRect
+                    width: 20
+                    height: 20
+                    radius: targetRect.width / 2
+                    color: "red"
+                    border.color: "black"
+                    border.width: 1
+                    anchors.centerIn: parent
+
+                    MouseArea {
+                        id: targetMouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                    }
+                }
+
+                Rectangle {
+                    visible: targetMouseArea.containsMouse || tooltipMouseArea.containsMouse
+                    anchors.horizontalCenter: targetRect.horizontalCenter
+                    anchors.top: targetRect.bottom
+                    anchors.topMargin: 5
+                    color: qgcPal.window
+                    radius: 4
+                    border.color: "black"
+                    border.width: 1
+                    width: column.width
+                    height: column.height
+
+                    Column {
+                        id: column
+                        padding: 10
+                        spacing: 5
+                        anchors.margins: 5
+                        anchors.fill: parent
+
+                        Text {
+                            color: "white"
+                            text: "方位: " + modelData.compass
                         }
+                        Text {
+                            color: "white"
+                            text: "距离: " + modelData.distance
+                        }
+                        Text {
+                            color: "white"
+                            text: "航向: " + modelData.course
+                        }
+                        Text {
+                            color: "white"
+                            text: "航速: " + modelData.speed
+                        }
+                        Text {
+                            color: "white"
+                            text: "纬度: " + modelData.lat
+                        }
+                        Text {
+                            color: "white"
+                            text: "经度: " + modelData.lon
+                        }
+                        Text {
+                            color: "white"
+                            text: "高度: " + modelData.alt
+                        }
+                        QGCButton {
+                            text: "选为目标"
+                            onClicked: {
+                                RadarReceiver.setTargetBatch(modelData.batch)
+                            }
+                        }
+                    }
+
+                    MouseArea {
+                        id: tooltipMouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
                     }
                 }
             }
@@ -82,26 +145,6 @@ Item {
             color: Qt.rgba(0, 0, 0, 0.5)
         }
         z: QGroundControl.zOrderMapItems - 1
-    }
-
-    // 选为目标按钮
-    MapQuickItem {
-        parent: map
-        visible: radar.selectedTrack !== null
-        coordinate: radar.selectedTrack !== null
-                    ? QtPositioning.coordinate(radar.selectedTrack.lat, radar.selectedTrack.lon)
-                    : QtPositioning.coordinate(0, 0)
-        anchorPoint.x: 0
-        anchorPoint.y: 40
-        z: QGroundControl.zOrderWidgets
-
-        sourceItem: QGCButton {
-            text: "选为目标"
-            onClicked: {
-                RadarReceiver.setTargetBatch(radar.selectedTrack.batch)
-                radar.selectedTrack = null;
-            }
-        }
     }
 
     // 雷达中心点

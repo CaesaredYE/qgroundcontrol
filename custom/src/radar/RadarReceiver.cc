@@ -48,8 +48,6 @@ void RadarReceiver::readData() {
 
         // 航迹报文
         if (datagram.size() >= 56 && datagram.constData()[4] == 0x01) {
-            qDebug() << "received:" << datagram.toHex();
-
             quint16 trackCount;
             memcpy(&trackCount, datagram.constData() + 8, sizeof(quint16));
 
@@ -58,14 +56,20 @@ void RadarReceiver::readData() {
 
                 TrackInfo info {};
                 memcpy(&info.batch, datagram.constData() + 12 + offset, sizeof(quint32));
+                memcpy(&info.existFlag, datagram.constData() + 36 + offset, sizeof(quint16));
+
+                memcpy(&info.compass, datagram.constData() + 16 + offset, sizeof(float));
+                memcpy(&info.distance, datagram.constData() + 20 + offset, sizeof(float));
+                memcpy(&info.course, datagram.constData() + 44 + offset, sizeof(float));
+                memcpy(&info.speed, datagram.constData() + 48 + offset, sizeof(float));
+
                 memcpy(&info.lat, datagram.constData() + 24 + offset, sizeof(float));
                 memcpy(&info.lon, datagram.constData() + 28 + offset, sizeof(float));
                 memcpy(&info.alt, datagram.constData() + 52 + offset, sizeof(float));
-                memcpy(&info.existFlag, datagram.constData() + 36 + offset, sizeof(quint16));
-
-                qDebug() << "批号" << info.batch << "纬度" << info.lat  << "经度" << info.lon << "高度" << info.alt << "存在标识" << info.existFlag;
 
                 _tracks[info.batch] = info;
+
+                qDebug() << "收到雷达消息; 批号" << info.batch << "纬度" << info.lat  << "经度" << info.lon << "高度" << info.alt << "存在标识" << info.existFlag;
 
                 if (_targetBatch && info.batch == _targetBatch) {
                     sendTrackToVehicle();
@@ -82,10 +86,16 @@ QVariantList RadarReceiver::trackList() const {
     for (const auto& t : _tracks) {
         QVariantMap map;
         map["batch"] = t.batch;
-        map["lat"] = t.lat;
-        map["lon"] = t.lon;
-        map["alt"] = t.alt;
         map["existFlag"] = t.existFlag;
+
+        map["compass"] = QString::number(t.compass);
+        map["distance"] = QString::number(t.distance);
+        map["course"] = QString::number(t.course);
+        map["speed"] = QString::number(t.speed);
+
+        map["lat"] = QString::number(t.lat);
+        map["lon"] = QString::number(t.lon);
+        map["alt"] = QString::number(t.alt);
         list.append(map);
     }
     return list;
