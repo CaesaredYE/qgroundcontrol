@@ -40,3 +40,11 @@ HEADERS += \
 INCLUDEPATH += \
     $$PWD/src \
     $$PWD/src/radar \
+
+MacBuild {
+    ICON = $$PWD/res/icons/macx.icns
+}
+
+WindowsBuild {
+    RC_ICONS = $$PWD/res/icons/dropstrike.ico
+}

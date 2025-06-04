@@ -32,7 +32,7 @@ ToolStripActionList {
         GuidedActionGripper { },
         ToolStripAction {
             text:       qsTr("紧急停止")
-            iconSource: "/res/CustomStop.svg"
+            iconSource: "/custom/img/stop.svg"
             visible:    _guidedController.showLand && !_guidedController.showTakeoff
             enabled:    _guidedController.showLand
 
@@ -42,7 +42,7 @@ ToolStripActionList {
         },
         ToolStripAction {
             text:       qsTr("发送坐标")
-            iconSource: "/res/CustomLocation.svg"
+            iconSource: "/res/img/location.svg"
             visible:    _guidedController._activeVehicle
             enabled:    _guidedController._activeVehicle
 
@@ -50,14 +50,14 @@ ToolStripActionList {
         },
         ToolStripAction {
             text:       qsTr("开启探测")
-            iconSource: "/res/CustomRadar.svg"
+            iconSource: "/custom/img/radar.svg"
             onTriggered: {
                 QGroundControl.corePlugin.startSurvey();
             }
         },
         ToolStripAction {
             text:       qsTr("停止探测")
-            iconSource: "/res/CustomStop.svg"
+            iconSource: "/custom/img/stop.svg"
             onTriggered: {
                 QGroundControl.corePlugin.stopSurvey();
             }
