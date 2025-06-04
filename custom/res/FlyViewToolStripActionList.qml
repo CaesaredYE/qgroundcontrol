@@ -42,7 +42,7 @@ ToolStripActionList {
         },
         ToolStripAction {
             text:       qsTr("发送坐标")
-            iconSource: "/res/img/location.svg"
+            iconSource: "/custom/img/location.svg"
             visible:    _guidedController._activeVehicle
             enabled:    _guidedController._activeVehicle
 

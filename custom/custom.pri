@@ -5,8 +5,10 @@ CONFIG  += QGC_DISABLE_APM_PLUGIN_FACTORY
 
 CONFIG  += installer
 
+CUSTOM_QGC_VERSION = "0.0.1"
+
 DEFINES -= APP_VERSION_STR=\"\\\"$$APP_VERSION_STR\\\"\"
-DEFINES += APP_VERSION_STR=\"\\\"0.0.1\\\"\"
+DEFINES += APP_VERSION_STR=\"\\\"$$CUSTOM_QGC_VERSION\\\"\"
 
 DEFINES += CUSTOMHEADER=\"\\\"CustomPlugin.h\\\"\"
 DEFINES += CUSTOMCLASS=CustomPlugin
@@ -32,10 +34,12 @@ QML_IMPORT_PATH += \
 SOURCES += \
     $$PWD/src/CustomPlugin.cc \
     $$PWD/src/radar/RadarReceiver.cc \
+    $$PWD/src/radar/RadarSettings.cc \
 
 HEADERS += \
     $$PWD/src/CustomPlugin.h \
     $$PWD/src/radar/RadarReceiver.h \
+    $$PWD/src/radar/RadarSettings.h \
 
 INCLUDEPATH += \
     $$PWD/src \

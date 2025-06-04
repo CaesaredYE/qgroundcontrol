@@ -9,11 +9,12 @@
     </qresource>
     <qresource prefix="/res">
         <file alias="QGCLogoFull">res/icons/logo.svg</file>
-        <file alias="QGCLogoWhite">res/icons/location.svg</file>
+        <file alias="QGCLogoWhite">res/icons/logo.svg</file>
     </qresource>
     <qresource prefix="/qml">
         <file alias="QGroundControl/FlightDisplay/FlyViewToolStrip.qml">res/FlyViewToolStrip.qml</file>
         <file alias="QGroundControl/FlightDisplay/FlyViewToolStripActionList.qml">res/FlyViewToolStripActionList.qml</file>
         <file alias="QGroundControl/FlightMap/CustomMapItems.qml">res/CustomMapItems.qml</file>
+        <file alias="RadarSettings.qml">res/RadarSettings.qml</file>
     </qresource>
 </RCC>

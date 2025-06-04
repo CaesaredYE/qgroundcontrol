@@ -22,6 +22,29 @@ CustomPlugin::CustomPlugin(QGCApplication *app, QGCToolbox *toolbox)
     _radarReceiver->start();
 }
 
+void CustomPlugin::_addSettingsEntry(const QString& title, const char* qmlFile, const char* iconFile)
+{
+    Q_CHECK_PTR(qmlFile);
+    _customSettingsList.append(QVariant::fromValue(
+        new QmlComponentInfo(title,
+                             QUrl::fromUserInput(qmlFile),
+                             iconFile == nullptr ? QUrl() : QUrl::fromUserInput(iconFile),
+                             this)));
+}
+
+QVariantList& CustomPlugin::settingsPages()
+{
+    if(_customSettingsList.isEmpty()) {
+        _addSettingsEntry(tr("General"),     "qrc:/qml/GeneralSettings.qml",     "qrc:/res/gear-white.svg");
+        _addSettingsEntry(tr("Comm Links"),  "qrc:/qml/LinkSettings.qml",        "qrc:/res/waves.svg");
+        _addSettingsEntry(tr("Offline Maps"),"qrc:/qml/OfflineMap.qml",          "qrc:/res/waves.svg");
+        _addSettingsEntry(tr("MAVLink"),     "qrc:/qml/MavlinkSettings.qml",     "qrc:/res/waves.svg");
+        _addSettingsEntry(tr("Console"),     "qrc:/qml/QGroundControl/Controls/AppMessages.qml");
+        _addSettingsEntry(tr("Radar"),       "qrc:/qml/RadarSettings.qml");
+    }
+    return _customSettingsList;
+}
+
 void CustomPlugin::connectRadar()
 {
     _radarReceiver->start();
