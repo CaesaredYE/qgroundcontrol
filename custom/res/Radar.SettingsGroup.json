@@ -1,0 +1,44 @@
+{
+    "version":      1,
+    "fileType":     "FactMetaData",
+    "QGC.MetaData.Facts": [
+        {
+            "name": "radarIP",
+            "shortDesc": "Radar IP address",
+            "type": "string",
+            "default": "192.168.1.100"
+        },
+        {
+            "name": "radarPort",
+            "shortDesc": "Radar Port",
+            "type": "uint32",
+            "default": 12580
+        },
+        {
+            "name": "radarLocalPort",
+            "shortDesc": "Radar Local Port",
+            "type": "uint32",
+            "default": 6000
+        },
+        {
+            "name": "radarLatitude",
+            "shortDesc": "Radar Latitude",
+            "type": "double",
+            "default": 0,
+            "decimalPlaces":    9
+        },
+        {
+            "name": "radarLongitude",
+            "shortDesc": "Radar Longitude",
+            "type": "double",
+            "default": 0,
+            "decimalPlaces":    9
+        },
+        {
+            "name":         "autoConnect",
+            "shortDesc":    "Automatically connect Radar",
+            "type":         "bool",
+            "default":      true
+        }
+    ]
+}

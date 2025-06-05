@@ -1,42 +1,97 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
-import QGroundControl.Controls 1.0
-import QGroundControl.FactSystem 1.0
+import QtQuick.Layouts  1.2
+
+import QGroundControl   1.0
+import QGroundControl.Controls  1.0
+import QGroundControl.ScreenTools   1.0
+import QGroundControl.FactSystem    1.0
 import QGroundControl.FactControls  1.0
-import QGroundControl.SettingsManager   1.0
+import QGroundControl.Palette       1.0
 
-Item {
-    id: root
+Rectangle {
+    id:                 root
+    color:              qgcPal.window
+    anchors.fill:       parent
+    anchors.margins:    ScreenTools.defaultFontPixelWidth
 
-    property var radarSettings: QGroundControl.settingsManager.radarSettings
+    property var radarController:   QGroundControl.corePlugin.radarController
+    property var radarSettings:     QGroundControl.corePlugin.radarSettings
 
-    Column {
-        spacing: 16
-        anchors.margins: 20
+    QGCPalette {
+        id:                 qgcPal
+        colorGroupEnabled:  enabled
+    }
 
-        FactTextField {
-            label: qsTr("Radar IP Address")
-            fact: radarSettings.radarIP
+    QGCFlickable {
+        clip:               true
+        anchors.top:        parent.top
+        width:              parent.width
+        height:             parent.height - buttonRow.height
+        contentHeight:      settingsColumn.height
+        contentWidth:       root.width
+        flickableDirection: Flickable.VerticalFlick
+
+        Column {
+            id:                 settingsColumn
+            width:              root.width
+            anchors.margins:    ScreenTools.defaultFontPixelWidth
+            spacing:            ScreenTools.defaultFontPixelHeight / 2
+
+            QGCLabel {
+                text: qsTr("雷达IP")
+            }
+            FactTextField {
+                fact: radarSettings.radarIP
+            }
+
+            QGCLabel {
+                text: qsTr("雷达Port")
+            }
+            FactTextField {
+                fact: radarSettings.radarPort
+            }
+
+            QGCLabel {
+                text:qsTr("本机Port")
+            }
+            FactTextField {
+                fact: radarSettings.radarLocalPort
+            }
+
+            QGCLabel {
+                text: qsTr("雷达纬度")
+            }
+            FactTextField {
+                fact: radarSettings.radarLatitude
+            }
+
+            QGCLabel {
+                text: qsTr("雷达经度")
+            }
+            FactTextField {
+                fact: radarSettings.radarLongitude
+            }
+        }
+    }
+
+    Row {
+        id:                 buttonRow
+        spacing:            ScreenTools.defaultFontPixelWidth
+        anchors.bottom:     parent.bottom
+        anchors.margins:    ScreenTools.defaultFontPixelWidth
+        anchors.horizontalCenter: parent.horizontalCenter
+
+        QGCButton {
+            text:       qsTr("连接")
+            enabled:    !radarController.isConnected
+            onClicked:  radarController.connectRadar()
         }
 
-        FactTextField {
-            label: qsTr("Radar Port")
-            fact: radarSettings.radarPort
-        }
-
-        FactTextField {
-            label: qsTr("Radar Local Port")
-            fact: radarSettings.radarLocalPort
-        }
-
-        FactTextField {
-            label: qsTr("Radar Latitude")
-            fact: radarSettings.radarLatitude
-        }
-
-        FactTextField {
-            label: qsTr("Radar Longitude")
-            fact: radarSettings.radarLongitude
+        QGCButton {
+            text:       qsTr("断开")
+            enabled:    radarController.isConnected
+            onClicked:  radarController.disconnectRadar()
         }
     }
 }

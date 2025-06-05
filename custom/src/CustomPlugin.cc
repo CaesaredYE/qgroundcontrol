@@ -17,19 +17,17 @@
 CustomPlugin::CustomPlugin(QGCApplication *app, QGCToolbox *toolbox)
     : QGCCorePlugin(app, toolbox)
 {
-    _radarReceiver = new RadarReceiver(this);
-    qmlRegisterSingletonInstance("RadarReceiver", 1, 0, "RadarReceiver", _radarReceiver);
-    _radarReceiver->start();
+
 }
 
-void CustomPlugin::_addSettingsEntry(const QString& title, const char* qmlFile, const char* iconFile)
+void CustomPlugin::setToolbox(QGCToolbox* toolbox)
 {
-    Q_CHECK_PTR(qmlFile);
-    _customSettingsList.append(QVariant::fromValue(
-        new QmlComponentInfo(title,
-                             QUrl::fromUserInput(qmlFile),
-                             iconFile == nullptr ? QUrl() : QUrl::fromUserInput(iconFile),
-                             this)));
+    QGCCorePlugin::setToolbox(toolbox);
+
+    _radarSettings = new RadarSettings(this);
+    _radarController = new RadarController(_radarSettings, this);
+
+    qmlRegisterUncreatableType<RadarController>("QGroundControl", 1, 0, "RadarController", "Reference only");
 }
 
 QVariantList& CustomPlugin::settingsPages()
@@ -45,39 +43,14 @@ QVariantList& CustomPlugin::settingsPages()
     return _customSettingsList;
 }
 
-void CustomPlugin::connectRadar()
+void CustomPlugin::_addSettingsEntry(const QString& title, const char* qmlFile, const char* iconFile)
 {
-    _radarReceiver->start();
-}
-
-void CustomPlugin::startSurvey()
-{
-    const uint8_t data[] = {
-        0xaa, 0xaa, 0xaa, 0xaa,
-        0x0b, 0x00, 0x00, 0x00,
-        0x15, 0x01, 0x00, 0xff,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0xff, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00
-    };
-    _radarReceiver->writeData(data, sizeof(data));
-}
-
-void CustomPlugin::stopSurvey()
-{
-    const uint8_t data[] = {
-        0xaa, 0xaa, 0xaa, 0xaa,
-        0x0b, 0x00, 0x00, 0x00,
-        0x15, 0x01, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00
-    };
-    _radarReceiver->writeData(data, sizeof(data));
+    Q_CHECK_PTR(qmlFile);
+    _customSettingsList.append(QVariant::fromValue(
+        new QmlComponentInfo(title,
+                             QUrl::fromUserInput(qmlFile),
+                             iconFile == nullptr ? QUrl() : QUrl::fromUserInput(iconFile),
+                             this)));
 }
 
 void CustomPlugin::sendLocationCmd(const QString& lat, const QString& lon, const QString& alt)

@@ -17,6 +17,8 @@ ToolStripActionList {
     signal displayPreFlightChecklist
     signal showLocationDialog
 
+    property var    radarController:    QGroundControl.corePlugin.radarController
+
     model: [
         ToolStripAction {
             text:           qsTr("Plan")
@@ -35,32 +37,28 @@ ToolStripActionList {
             iconSource: "/custom/img/stop.svg"
             visible:    _guidedController.showLand && !_guidedController.showTakeoff
             enabled:    _guidedController.showLand
-
-            onTriggered: {
-                QGroundControl.corePlugin.sendStopCmd();
-            }
+            onTriggered: QGroundControl.corePlugin.sendStopCmd()
         },
         ToolStripAction {
             text:       qsTr("发送坐标")
             iconSource: "/custom/img/location.svg"
             visible:    _guidedController._activeVehicle
             enabled:    _guidedController._activeVehicle
-
             onTriggered: showLocationDialog()
         },
         ToolStripAction {
             text:       qsTr("开启探测")
             iconSource: "/custom/img/radar.svg"
-            onTriggered: {
-                QGroundControl.corePlugin.startSurvey();
-            }
+            visible:    radarController.isConnected
+            enabled:    !radarController.isScanning
+            onTriggered: radarController.startScan()
         },
         ToolStripAction {
             text:       qsTr("停止探测")
             iconSource: "/custom/img/stop.svg"
-            onTriggered: {
-                QGroundControl.corePlugin.stopSurvey();
-            }
+            visible:    radarController.isConnected
+            enabled:    radarController.isScanning
+            onTriggered: radarController.stopScan()
         }
     ]
 }

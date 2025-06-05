@@ -12,28 +12,34 @@
 #pragma once
 
 #include "QGCCorePlugin.h"
-#include "RadarReceiver.h"
+#include "RadarController.h"
+#include "RadarSettings.h"
 
 class CustomPlugin : public QGCCorePlugin
 {
     Q_OBJECT
+    Q_PROPERTY(RadarController* radarController READ radarController CONSTANT)
+    Q_PROPERTY(RadarSettings* radarSettings READ radarSettings CONSTANT)
 
 public:
     CustomPlugin(QGCApplication *app, QGCToolbox *toolbox);
 
-    QVariantList&    settingsPages                   (void) final;
+    void             setToolbox             (QGCToolbox* toolbox);
 
-    Q_INVOKABLE void connectRadar();
-    Q_INVOKABLE void startSurvey();
-    Q_INVOKABLE void stopSurvey();
+    QVariantList&    settingsPages          (void) final;
 
-    Q_INVOKABLE void sendLocationCmd(const QString& lat, const QString& lon, const QString& alt);
-    Q_INVOKABLE void sendStopCmd();
+    RadarController* radarController        (void) { return _radarController; }
+    RadarSettings*   radarSettings          (void) { return _radarSettings; }
 
-private:
-    void _addSettingsEntry(const QString& title, const char* qmlFile, const char* iconFile = nullptr);
+    Q_INVOKABLE void sendLocationCmd        (const QString& lat, const QString& lon, const QString& alt);
+    Q_INVOKABLE void sendStopCmd            ();
 
 private:
-    QVariantList   _customSettingsList;
-    RadarReceiver* _radarReceiver = nullptr;
+    void _addSettingsEntry                  (const QString& title, const char* qmlFile, const char* iconFile = nullptr);
+
+private:
+    QVariantList        _customSettingsList;
+
+    RadarController*    _radarController;
+    RadarSettings*      _radarSettings;
 };

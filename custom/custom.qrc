@@ -17,4 +17,7 @@
         <file alias="QGroundControl/FlightMap/CustomMapItems.qml">res/CustomMapItems.qml</file>
         <file alias="RadarSettings.qml">res/RadarSettings.qml</file>
     </qresource>
+    <qresource prefix="/json">
+        <file alias="Radar.SettingsGroup.json">res/Radar.SettingsGroup.json</file>
+    </qresource>
 </RCC>

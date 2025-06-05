@@ -22,17 +22,37 @@ import QGroundControl.FlightMap     1.0
 import QGroundControl.Palette       1.0
 import QGroundControl.ScreenTools   1.0
 import QGroundControl.Vehicle       1.0
-import RadarReceiver 1.0
 
 Item {
     id: radar
     property var    map
     property bool   largeMapView
-    property var    radarCenter: QtPositioning.coordinate(30.276150, 114.070351)
 
-    Component.onCompleted: {
-        if (map) {
-            map.center = radarCenter;
+    property var    radarController:    QGroundControl.corePlugin.radarController
+    property var    radarSettings:      QGroundControl.corePlugin.radarSettings
+    property var    radarCenter:        undefined
+
+    Component.onCompleted: updateRadarCenter()
+
+    Connections {
+        target: radarSettings.radarLatitude
+        onValueChanged: updateRadarCenter()
+    }
+    Connections {
+        target: radarSettings.radarLongitude
+        onValueChanged: updateRadarCenter()
+    }
+
+    function updateRadarCenter() {
+        if (radarSettings.radarLatitude.value && radarSettings.radarLongitude.value) {
+            radarCenter = QtPositioning.coordinate(
+                        radarSettings.radarLatitude.value,
+                        radarSettings.radarLongitude.value
+                        )
+
+            if (map) {
+                map.center = radarCenter
+            }
         }
     }
 
@@ -40,11 +60,11 @@ Item {
     MapItemView {
         id: mapItemView
         parent: map
-        model: RadarReceiver.trackList
+        model: radarController.trackList
         z: QGroundControl.zOrderMapItems + 1
         delegate: MapQuickItem {
             parent: map
-            visible: modelData.existFlag === 1
+            visible: radarController.isScanning && modelData.existFlag === 1
             coordinate: QtPositioning.coordinate(modelData.lat, modelData.lon)
             anchorPoint.x: targetRect.width / 2
             anchorPoint.y: targetRect.width / 2
@@ -118,7 +138,7 @@ Item {
                         QGCButton {
                             text: "选为目标"
                             onClicked: {
-                                RadarReceiver.setTargetBatch(modelData.batch)
+                                radarController.setTargetBatch(modelData.batch)
                             }
                         }
                     }
@@ -154,6 +174,7 @@ Item {
         anchorPoint.x: radarScan.width / 2
         anchorPoint.y: radarScan.height / 2
         sourceItem: radarScan
+        visible: radarController.isScanning
         z: QGroundControl.zOrderMapItems
     }
 

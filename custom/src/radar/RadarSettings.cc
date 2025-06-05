@@ -5,7 +5,7 @@
 
 DECLARE_SETTINGGROUP(Radar, "Radar")
 {
-    qmlRegisterUncreatableType<RadarSettings>("QGroundControl.SettingsManager", 1, 0, "RadarSettings", "Reference only");
+    qmlRegisterUncreatableType<RadarSettings>("QGroundControl", 1, 0, "RadarSettings", "Reference only");
 }
 
 DECLARE_SETTINGSFACT(RadarSettings, radarIP)
