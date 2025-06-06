@@ -15,6 +15,12 @@ RadarController::RadarController(RadarSettings* radarSettings,  QObject* parent)
     _remoteHost = QHostAddress(_radarSettings->ip()->rawValue().toString());
     _remotePort = _radarSettings->port()->rawValue().toUInt();
     _localPort  = _radarSettings->localPort()->rawValue().toUInt();
+
+    bool autoConnect  = _radarSettings->autoConnect()->rawValue().toBool();
+
+    if (autoConnect) {
+        connectRadar();
+    }
 }
 
 QVariantList RadarController::trackList() const {
@@ -58,6 +64,10 @@ void RadarController::connectRadar() {
 
 void RadarController::disconnectRadar() {
     if (_udpSocket) {
+        if(_isScanning){
+            stopScan();
+        }
+
         _udpSocket->close();
         _udpSocket->deleteLater();
         _udpSocket = nullptr;
@@ -65,11 +75,11 @@ void RadarController::disconnectRadar() {
 
     _isConnected = false;
     emit isConnectedChanged();
-
-    stopHeartbeat();
 }
 
 void RadarController::startScan() {
+    startHeartbeat();
+
     const uint8_t data[] = {
         0xaa, 0xaa, 0xaa, 0xaa,
         0x0b, 0x00, 0x00, 0x00,
@@ -85,8 +95,6 @@ void RadarController::startScan() {
 
     _isScanning = true;
     emit isScanningChanged();
-
-    startHeartbeat();
 }
 
 void RadarController::stopScan()

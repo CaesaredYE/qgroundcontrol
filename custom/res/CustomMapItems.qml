@@ -30,7 +30,8 @@ Item {
 
     property var    radarController:    QGroundControl.corePlugin.radarController
     property var    radarSettings:      QGroundControl.corePlugin.radarSettings
-    property var    mapCenter:          undefined
+    property var    mapCenter:          null
+    property var    selectedTrack:      null
 
     Component.onCompleted: updateMapCenter()
 
@@ -70,8 +71,9 @@ Item {
             anchorPoint.x: targetRect.width / 2
             anchorPoint.y: targetRect.width / 2
             z: QGroundControl.zOrderMapItems + 1
-
             sourceItem: Item {
+                QGCPalette { id: qgcPal; colorGroupEnabled: true }
+
                 Rectangle {
                     id: targetRect
                     width: 20
@@ -86,11 +88,18 @@ Item {
                         id: targetMouseArea
                         anchors.fill: parent
                         hoverEnabled: true
+                        onClicked: {
+                            if (selectedTrack != null && (selectedTrack.batch === modelData.batch)){
+                                selectedTrack = null;
+                            } else {
+                                selectedTrack = modelData;
+                            }
+                        }
                     }
                 }
 
                 Rectangle {
-                    visible: targetMouseArea.containsMouse || tooltipMouseArea.containsMouse
+                    visible: targetMouseArea.containsMouse
                     anchors.horizontalCenter: targetRect.horizontalCenter
                     anchors.top: targetRect.bottom
                     anchors.topMargin: 5
@@ -98,8 +107,6 @@ Item {
                     radius: 4
                     border.color: "black"
                     border.width: 1
-                    width: column.width
-                    height: column.height
 
                     Column {
                         id: column
@@ -136,20 +143,27 @@ Item {
                             color: "white"
                             text: "高度: " + modelData.alt
                         }
-                        QGCButton {
-                            text: "选为目标"
-                            onClicked: {
-                                radarController.setTargetBatch(modelData.batch)
-                            }
-                        }
-                    }
-
-                    MouseArea {
-                        id: tooltipMouseArea
-                        anchors.fill: parent
-                        hoverEnabled: true
                     }
                 }
+            }
+        }
+    }
+
+    // 选为目标按钮
+    MapQuickItem {
+        parent: map
+        visible: selectedTrack !== null
+        coordinate: selectedTrack !== null
+                    ? QtPositioning.coordinate(selectedTrack.lat, selectedTrack.lon)
+                    : QtPositioning.coordinate(0, 0)
+        anchorPoint.x: 0
+        anchorPoint.y: 40
+        z: QGroundControl.zOrderWidgets
+        sourceItem: QGCButton {
+            text: "选为目标"
+            onClicked: {
+                radarController.setTargetBatch(selectedTrack.batch)
+                selectedTrack = null;
             }
         }
     }
@@ -169,74 +183,71 @@ Item {
         }
     }
 
-    // 雷达中心点
+    // 雷达扫描效果
     MapQuickItem {
         parent: map
-        coordinate: mapCenter
+        coordinate: mapCenter !== null ? mapCenter : QtPositioning.coordinate(0, 0)
         anchorPoint.x: radarScan.width / 2
         anchorPoint.y: radarScan.height / 2
-        visible: radarController.isScanning
+        visible: mapCenter !== null && radarController.isScanning
         z: QGroundControl.zOrderMapItems
-        sourceItem: radarScan
-    }
+        sourceItem: Item {
+            id: radarScan
+            width: 1024
+            height: 1024
 
-    // 雷达扫描效果
-    Item {
-        id: radarScan
-        width: 1024
-        height: 1024
-        
-        Canvas {
-            id: radarCanvas
-            anchors.fill: parent
-            property real sweepAngle: 30
-            property real rotationAngle: 0
+            Canvas {
+                id: radarCanvas
+                anchors.fill: parent
+                property real sweepAngle: 30
+                property real rotationAngle: 0
 
-            onPaint: {
-                var ctx = getContext("2d");
-                ctx.clearRect(0, 0, width, height);
+                onPaint: {
+                    var ctx = getContext("2d");
+                    ctx.clearRect(0, 0, width, height);
 
-                ctx.save();
-                ctx.translate(width / 2, height / 2);
+                    ctx.save();
+                    ctx.translate(width / 2, height / 2);
 
-                // === 1. 绘制同心圆 ===
-                ctx.strokeStyle = "rgba(255, 0, 0, 0.9)";
-                ctx.lineWidth = 1;
-                var ringCount = 4; // 同心圆数量
-                var maxRadius = width / 2;
-                for (var i = 1; i <= ringCount; i++) {
-                    var radius = (i / ringCount) * maxRadius;
+                    // === 1. 绘制同心圆 ===
+                    ctx.strokeStyle = "rgba(255, 0, 0, 0.9)";
+                    ctx.lineWidth = 1;
+                    var ringCount = 4; // 同心圆数量
+                    var maxRadius = width / 2;
+                    for (var i = 1; i <= ringCount; i++) {
+                        var radius = (i / ringCount) * maxRadius;
+                        ctx.beginPath();
+                        ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+                        ctx.stroke();
+                    }
+
+                    // === 2. 绘制旋转扇形 ===
+                    ctx.rotate(rotationAngle * Math.PI / 180);
+
+                    var gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, maxRadius);
+                    gradient.addColorStop(0, "rgba(0, 255, 0, 0.7)");
+                    gradient.addColorStop(1, "rgba(0, 255, 0, 0)");
+
                     ctx.beginPath();
-                    ctx.arc(0, 0, radius, 0, 2 * Math.PI);
-                    ctx.stroke();
+                    ctx.moveTo(0, 0);
+                    ctx.arc(0, 0, maxRadius, 0, sweepAngle * Math.PI / 180);
+                    ctx.closePath();
+                    ctx.fillStyle = gradient;
+                    ctx.fill();
+
+                    ctx.restore();
                 }
 
-                // === 2. 绘制旋转扇形 ===
-                ctx.rotate(rotationAngle * Math.PI / 180);
-
-                var gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, maxRadius);
-                gradient.addColorStop(0, "rgba(0, 255, 0, 0.7)");
-                gradient.addColorStop(1, "rgba(0, 255, 0, 0)");
-
-                ctx.beginPath();
-                ctx.moveTo(0, 0);
-                ctx.arc(0, 0, maxRadius, 0, sweepAngle * Math.PI / 180);
-                ctx.closePath();
-                ctx.fillStyle = gradient;
-                ctx.fill();
-
-                ctx.restore();
-            }
-
-            Timer {
-                interval: 16
-                running: true
-                repeat: true
-                onTriggered: {
-                    radarCanvas.rotationAngle += 1;
-                    if (radarCanvas.rotationAngle >= 360)
-                        radarCanvas.rotationAngle = 0;
-                    radarCanvas.requestPaint();
+                Timer {
+                    interval: 16
+                    running: true
+                    repeat: true
+                    onTriggered: {
+                        radarCanvas.rotationAngle += 1;
+                        if (radarCanvas.rotationAngle >= 360)
+                            radarCanvas.rotationAngle = 0;
+                        radarCanvas.requestPaint();
+                    }
                 }
             }
         }
