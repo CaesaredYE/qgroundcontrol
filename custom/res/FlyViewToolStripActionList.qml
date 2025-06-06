@@ -37,7 +37,7 @@ ToolStripActionList {
             iconSource: "/custom/img/stop.svg"
             visible:    _guidedController.showLand && !_guidedController.showTakeoff
             enabled:    _guidedController.showLand
-            onTriggered: QGroundControl.corePlugin.sendStopCmd()
+            onTriggered: QGroundControl.corePlugin.emergencyStop()
         },
         ToolStripAction {
             text:       qsTr("发送坐标")

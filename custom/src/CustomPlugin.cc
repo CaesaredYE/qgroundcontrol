@@ -8,16 +8,16 @@
  *   @brief Custom QGCCorePlugin Implementation
  *   @author Gus Grubba <gus@auterion.com>
  */
-#include <QtQml>
+
 #include <QQmlEngine>
 
 #include "CustomPlugin.h"
 #include "QmlComponentInfo.h"
+#include "QGCApplication.h"
 
 CustomPlugin::CustomPlugin(QGCApplication *app, QGCToolbox *toolbox)
     : QGCCorePlugin(app, toolbox)
 {
-
 }
 
 void CustomPlugin::setToolbox(QGCToolbox* toolbox)
@@ -53,7 +53,7 @@ void CustomPlugin::_addSettingsEntry(const QString& title, const char* qmlFile, 
                              this)));
 }
 
-void CustomPlugin::sendLocationCmd(const QString& lat, const QString& lon, const QString& alt)
+void CustomPlugin::sendTargetPosition(const QString& lat, const QString& lon, const QString& alt)
 {
     Vehicle* vehicle = qgcApp()->toolbox()->multiVehicleManager()->activeVehicle();
     vehicle->sendMavCommandInt(MAV_COMP_ID_UDP_BRIDGE,
@@ -69,7 +69,7 @@ void CustomPlugin::sendLocationCmd(const QString& lat, const QString& lon, const
                                alt.toFloat());
 }
 
-void CustomPlugin::sendStopCmd()
+void CustomPlugin::emergencyStop()
 {
     Vehicle* vehicle = qgcApp()->toolbox()->multiVehicleManager()->activeVehicle();
     vehicle->sendMavCommand(MAV_COMP_ID_UDP_BRIDGE,

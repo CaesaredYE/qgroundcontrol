@@ -1,4 +1,6 @@
 #include "RadarController.h"
+#include "QGCApplication.h"
+
 #include <QDataStream>
 #include <QDebug>
 #include <QtMath>
@@ -10,26 +12,26 @@ RadarController::RadarController(RadarSettings* radarSettings,  QObject* parent)
 {
     Q_ASSERT(_radarSettings);
 
-    _remoteHost = QHostAddress(_radarSettings->radarIP()->rawValue().toString());
-    _remotePort = _radarSettings->radarPort()->rawValue().toUInt();
-    _localPort  = _radarSettings->radarLocalPort()->rawValue().toUInt();
+    _remoteHost = QHostAddress(_radarSettings->ip()->rawValue().toString());
+    _remotePort = _radarSettings->port()->rawValue().toUInt();
+    _localPort  = _radarSettings->localPort()->rawValue().toUInt();
 }
 
 QVariantList RadarController::trackList() const {
     QVariantList list;
     for (const auto& t : _tracks) {
         QVariantMap map;
-        map["batch"] = t.batch;
-        map["existFlag"] = t.existFlag;
+        map["batch"]        = t.batch;
+        map["existFlag"]    = t.existFlag;
 
-        map["compass"] = QString::number(t.compass);
+        map["compass"]  = QString::number(t.compass);
         map["distance"] = QString::number(t.distance);
-        map["course"] = QString::number(t.course);
-        map["speed"] = QString::number(t.speed);
+        map["course"]   = QString::number(t.course);
+        map["speed"]    = QString::number(t.speed);
 
-        map["lat"] = QString::number(t.lat);
-        map["lon"] = QString::number(t.lon);
-        map["alt"] = QString::number(t.alt);
+        map["lat"]      = QString::number(t.lat);
+        map["lon"]      = QString::number(t.lon);
+        map["alt"]      = QString::number(t.alt);
 
         list.append(map);
     }

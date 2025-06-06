@@ -3,32 +3,32 @@
     "fileType":     "FactMetaData",
     "QGC.MetaData.Facts": [
         {
-            "name": "radarIP",
+            "name": "ip",
             "shortDesc": "Radar IP address",
             "type": "string",
             "default": "192.168.1.100"
         },
         {
-            "name": "radarPort",
+            "name": "port",
             "shortDesc": "Radar Port",
             "type": "uint32",
             "default": 12580
         },
         {
-            "name": "radarLocalPort",
+            "name": "localPort",
             "shortDesc": "Radar Local Port",
             "type": "uint32",
             "default": 6000
         },
         {
-            "name": "radarLatitude",
+            "name": "latitude",
             "shortDesc": "Radar Latitude",
             "type": "double",
             "default": 0,
             "decimalPlaces":    9
         },
         {
-            "name": "radarLongitude",
+            "name": "longitude",
             "shortDesc": "Radar Longitude",
             "type": "double",
             "default": 0,

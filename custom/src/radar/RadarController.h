@@ -3,8 +3,6 @@
 #include <QObject>
 #include <QUdpSocket>
 #include <QGeoCoordinate>
-#include "QGCApplication.h"
-#include "Vehicle.h"
 #include "RadarSettings.h" 
 
 struct TrackInfo {

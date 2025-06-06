@@ -30,28 +30,28 @@ Item {
 
     property var    radarController:    QGroundControl.corePlugin.radarController
     property var    radarSettings:      QGroundControl.corePlugin.radarSettings
-    property var    radarCenter:        undefined
+    property var    mapCenter:          undefined
 
-    Component.onCompleted: updateRadarCenter()
+    Component.onCompleted: updateMapCenter()
 
     Connections {
-        target: radarSettings.radarLatitude
-        onValueChanged: updateRadarCenter()
+        target: radarSettings.latitude
+        onValueChanged: updateMapCenter()
     }
     Connections {
-        target: radarSettings.radarLongitude
-        onValueChanged: updateRadarCenter()
+        target: radarSettings.longitude
+        onValueChanged: updateMapCenter()
     }
 
-    function updateRadarCenter() {
-        if (radarSettings.radarLatitude.value && radarSettings.radarLongitude.value) {
-            radarCenter = QtPositioning.coordinate(
-                        radarSettings.radarLatitude.value,
-                        radarSettings.radarLongitude.value
+    function updateMapCenter() {
+        if (radarSettings.latitude.value && radarSettings.longitude.value) {
+            mapCenter = QtPositioning.coordinate(
+                        radarSettings.latitude.value,
+                        radarSettings.longitude.value
                         )
 
             if (map) {
-                map.center = radarCenter
+                map.center = mapCenter
             }
         }
     }
@@ -62,9 +62,10 @@ Item {
         parent: map
         model: radarController.trackList
         z: QGroundControl.zOrderMapItems + 1
+        visible: radarController.isScanning
         delegate: MapQuickItem {
             parent: map
-            visible: radarController.isScanning && modelData.existFlag === 1
+            visible:    modelData.existFlag === 1
             coordinate: QtPositioning.coordinate(modelData.lat, modelData.lon)
             anchorPoint.x: targetRect.width / 2
             anchorPoint.y: targetRect.width / 2
@@ -159,23 +160,24 @@ Item {
         coordinate: map.center
         anchorPoint.x: map.width / 2
         anchorPoint.y: map.height / 2
+        z: QGroundControl.zOrderMapItems - 1
+        visible: radarController.isScanning
         sourceItem: Rectangle {
             width: map.width
             height: map.height
             color: Qt.rgba(0, 0, 0, 0.5)
         }
-        z: QGroundControl.zOrderMapItems - 1
     }
 
     // 雷达中心点
     MapQuickItem {
         parent: map
-        coordinate: radarCenter
+        coordinate: mapCenter
         anchorPoint.x: radarScan.width / 2
         anchorPoint.y: radarScan.height / 2
-        sourceItem: radarScan
         visible: radarController.isScanning
         z: QGroundControl.zOrderMapItems
+        sourceItem: radarScan
     }
 
     // 雷达扫描效果

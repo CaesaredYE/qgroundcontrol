@@ -34,7 +34,8 @@ Rectangle {
 
         Column {
             id:                 settingsColumn
-            width:              root.width
+            width:              root.width * 0.5
+            anchors.horizontalCenter: parent.horizontalCenter
             anchors.margins:    ScreenTools.defaultFontPixelWidth
             spacing:            ScreenTools.defaultFontPixelHeight / 2
 
@@ -42,35 +43,35 @@ Rectangle {
                 text: qsTr("雷达IP")
             }
             FactTextField {
-                fact: radarSettings.radarIP
+                fact: radarSettings.ip
             }
 
             QGCLabel {
                 text: qsTr("雷达Port")
             }
             FactTextField {
-                fact: radarSettings.radarPort
+                fact: radarSettings.port
             }
 
             QGCLabel {
                 text:qsTr("本机Port")
             }
             FactTextField {
-                fact: radarSettings.radarLocalPort
+                fact: radarSettings.localPort
             }
 
             QGCLabel {
                 text: qsTr("雷达纬度")
             }
             FactTextField {
-                fact: radarSettings.radarLatitude
+                fact: radarSettings.latitude
             }
 
             QGCLabel {
                 text: qsTr("雷达经度")
             }
             FactTextField {
-                fact: radarSettings.radarLongitude
+                fact: radarSettings.longitude
             }
         }
     }

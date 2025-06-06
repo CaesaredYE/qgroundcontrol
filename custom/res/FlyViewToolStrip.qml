@@ -62,7 +62,7 @@ ToolStrip {
                         Layout.alignment:   Qt.AlignRight
                         Layout.columnSpan:  2
                         onClicked: {
-                            QGroundControl.corePlugin.sendLocationCmd(lat.text, lon.text, alt.text);
+                            QGroundControl.corePlugin.sendTargetPosition(lat.text, lon.text, alt.text);
                         }
                     }
                 }

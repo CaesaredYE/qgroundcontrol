@@ -25,14 +25,13 @@ public:
     CustomPlugin(QGCApplication *app, QGCToolbox *toolbox);
 
     void             setToolbox             (QGCToolbox* toolbox);
-
     QVariantList&    settingsPages          (void) final;
 
     RadarController* radarController        (void) { return _radarController; }
     RadarSettings*   radarSettings          (void) { return _radarSettings; }
 
-    Q_INVOKABLE void sendLocationCmd        (const QString& lat, const QString& lon, const QString& alt);
-    Q_INVOKABLE void sendStopCmd            ();
+    Q_INVOKABLE void sendTargetPosition     (const QString& lat, const QString& lon, const QString& alt);
+    Q_INVOKABLE void emergencyStop          ();
 
 private:
     void _addSettingsEntry                  (const QString& title, const char* qmlFile, const char* iconFile = nullptr);
