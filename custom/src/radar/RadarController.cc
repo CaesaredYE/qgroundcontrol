@@ -1,4 +1,4 @@
-#include "RadarController.h"
+﻿#include "RadarController.h"
 #include "QGCApplication.h"
 
 #include <QDataStream>
