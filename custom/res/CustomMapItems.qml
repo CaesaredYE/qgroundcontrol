@@ -72,8 +72,6 @@ Item {
             anchorPoint.y: targetRect.width / 2
             z: QGroundControl.zOrderMapItems + 1
             sourceItem: Item {
-                QGCPalette { id: qgcPal; colorGroupEnabled: true }
-
                 Rectangle {
                     id: targetRect
                     width: 20
@@ -107,6 +105,7 @@ Item {
                     radius: 4
                     border.color: "black"
                     border.width: 1
+                    z: QGroundControl.zOrderMapItems + 2
 
                     Column {
                         id: column
