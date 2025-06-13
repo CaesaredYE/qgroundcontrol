@@ -109,7 +109,7 @@ void CustomPlugin::sendUdpCommand(const QString& ip, int port, const QString& me
 
     QByteArray datagram = message.toUtf8();
     qint64 bytesWritten = _udpSocket->writeDatagram(datagram, addr, port);
-    qDebug() << "Sending UDP to" << ip << ":" << port << "message:" << message << "datagram" << datagram;
+    qDebug() << "Sending UDP to" << ip << ":" << port;
 
     if (bytesWritten == -1) {
         qWarning() << "Failed to send datagram:" << _udpSocket->errorString();

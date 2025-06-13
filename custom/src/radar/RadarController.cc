@@ -12,12 +12,7 @@ RadarController::RadarController(RadarSettings* radarSettings,  QObject* parent)
 {
     Q_ASSERT(_radarSettings);
 
-    _remoteHost = QHostAddress(_radarSettings->ip()->rawValue().toString());
-    _remotePort = _radarSettings->port()->rawValue().toUInt();
-    _localPort  = _radarSettings->localPort()->rawValue().toUInt();
-
     bool autoConnect  = _radarSettings->autoConnect()->rawValue().toBool();
-
     if (autoConnect) {
         connectRadar();
     }
@@ -58,6 +53,10 @@ void RadarController::connectRadar() {
     }
 
     connect(_udpSocket, &QUdpSocket::readyRead, this, &RadarController::onDataReceived);
+
+    _remoteHost = QHostAddress(_radarSettings->ip()->rawValue().toString());
+    _remotePort = _radarSettings->port()->rawValue().toUInt();
+    _localPort  = _radarSettings->localPort()->rawValue().toUInt();
 
     _isConnected = true;
     emit isConnectedChanged();
@@ -197,7 +196,7 @@ void RadarController::sendData(const uint8_t* data, int length) {
     if (!_udpSocket) {
         return;
     }
-
+    qDebug() << "Sending UDP to" << _remoteHost << ":" << _remotePort;
     QByteArray byteArray(reinterpret_cast<const char*>(data), length);
     _udpSocket->writeDatagram(byteArray, _remoteHost, _remotePort);
 }
