@@ -16,6 +16,7 @@ ToolStripActionList {
 
     signal displayPreFlightChecklist
     signal showLocationDialog
+    signal showStartupDialog
 
     property var    radarController:    QGroundControl.corePlugin.radarController
 
@@ -32,6 +33,11 @@ ToolStripActionList {
         GuidedActionPause { },
         GuidedActionActionList { },
         GuidedActionGripper { },
+        ToolStripAction {
+            text:       qsTr("启动")
+            iconSource: "/custom/img/terminal.svg"
+            onTriggered: showStartupDialog()
+        },
         ToolStripAction {
             text:       qsTr("紧急停止")
             iconSource: "/custom/img/stop.svg"

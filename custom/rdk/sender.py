@@ -2,7 +2,7 @@ import socket
 import json
 import threading
 
-LOCAL_PORT = 6001
+LOCAL_PORT = 6002
 REMOTE_IP = "172.16.0.48"
 REMOTE_PORT = 6000
 

@@ -31,6 +31,9 @@ ToolStrip {
         onShowLocationDialog: {
             sendLocation.createObject(mainWindow).open()
         }
+        onShowStartupDialog: {
+            startup.createObject(mainWindow).open()
+        }
     }
 
     model: flyViewToolStripActionList.model
@@ -63,6 +66,182 @@ ToolStrip {
                         Layout.columnSpan:  2
                         onClicked: {
                             QGroundControl.corePlugin.sendTargetPosition(lat.text, lon.text, alt.text);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    Component {
+        id: startup
+
+        QGCPopupDialog {
+            title: qsTr("启动")
+            buttons:    StandardButton.Close
+
+            property var outputs: ({
+                                       ros: [],
+                                       imageDetect: [],
+                                       intercept: [],
+                                       check: [],
+                                   })
+
+            Connections {
+                target: QGroundControl.corePlugin
+                function onCmdOutput(cmd, output) {
+                    appendOutput(cmd, output)
+                }
+            }
+
+            function startModule(cmd) {
+                let message = {
+                    type: "exec",
+                    cmd
+                }
+                QGroundControl.corePlugin.sendUdpCommand(ipField.text, parseInt(portField.text), JSON.stringify(message))
+                outputs[cmd] = []
+                updateOutputs()
+            }
+
+            function updateOutputs() {
+                rosOutput.text = outputs.ros.join("\n")
+                imageDetectOutput.text = outputs.imageDetect.join("\n")
+                interceptOutput.text = outputs.intercept.join("\n")
+                checkOutput.text = outputs.check.join("\n")
+            }
+
+            function appendOutput(cmd, line) {
+                outputs[cmd].push(line)
+                updateOutputs()
+            }
+
+            ColumnLayout {
+                spacing: ScreenTools.defaultFontPixelHeight
+
+                GridLayout {
+                    columns: 2
+                    QGCLabel { text: qsTr("IP 地址") }
+                    QGCTextField { id: ipField; text: "" }
+
+                    QGCLabel { text: qsTr("端口") }
+                    QGCTextField { id: portField; text: "6000" }
+                }
+
+                // 启动按钮
+                RowLayout {
+                    spacing: ScreenTools.defaultFontPixelWidth
+
+                    QGCButton {
+                        text: qsTr("ROS")
+                        enabled: ipField.text && portField.text
+                        onClicked: startModule("ros")
+                    }
+
+                    QGCButton {
+                        text: qsTr("图像检测")
+                        enabled: ipField.text && portField.text
+                        onClicked: startModule("imageDetect")
+                    }
+
+                    QGCButton {
+                        text: qsTr("拦截主程序")
+                        enabled: ipField.text && portField.text
+                        onClicked: startModule("intercept")
+                    }
+
+                    QGCButton {
+                        text: qsTr("飞机自检")
+                        enabled: ipField.text && portField.text
+                        onClicked: startModule("check")
+                    }
+                }
+
+                Rectangle {
+                    color: "#222"; radius: 4; border.color: "#888"
+                    Layout.fillWidth: true; height: 100
+
+                    ColumnLayout {
+                        anchors.fill: parent
+                        spacing: 4
+
+                        QGCLabel { text: qsTr(" ROS输出"); font.bold: true; color: "white" }
+                        Flickable {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            contentHeight: rosOutput.contentHeight
+                            clip: true
+
+                            QGCLabel {
+                                id: rosOutput
+                                wrapMode: Text.Wrap
+                            }
+                        }
+                    }
+                }
+
+                Rectangle {
+                    color: "#222"; radius: 4; border.color: "#888"
+                    Layout.fillWidth: true; height: 100
+
+                    ColumnLayout {
+                        anchors.fill: parent; spacing: 4
+                        
+                        QGCLabel { text: qsTr(" 图像检测输出"); font.bold: true; color: "white" }
+                        Flickable {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            contentHeight: imageDetectOutput.contentHeight
+                            clip: true
+
+                            QGCLabel {
+                                id: imageDetectOutput
+                                wrapMode: Text.Wrap
+                            }
+                        }
+                    }
+                }
+
+                Rectangle {
+                    color: "#222"; radius: 4; border.color: "#888"
+                    Layout.fillWidth: true; height: 100
+
+                    ColumnLayout {
+                        anchors.fill: parent; spacing: 4
+
+                        QGCLabel { text: qsTr(" 拦截主程序输出"); font.bold: true; color: "white" }
+                        Flickable {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            contentHeight: interceptOutput.contentHeight
+                            clip: true
+
+                            QGCLabel {
+                                id: interceptOutput
+                                wrapMode: Text.Wrap
+                            }
+                        }
+                    }
+                }
+
+                Rectangle {
+                    color: "#222"; radius: 4; border.color: "#888"
+                    Layout.fillWidth: true; height: 100
+
+                    ColumnLayout {
+                        anchors.fill: parent; spacing: 4
+
+                        QGCLabel { text: qsTr(" 飞机自检输出"); font.bold: true; color: "white" }
+                        Flickable {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            contentHeight: checkOutput.contentHeight
+                            clip: true
+
+                            QGCLabel {
+                                id: checkOutput
+                                wrapMode: Text.Wrap
+                            }
                         }
                     }
                 }

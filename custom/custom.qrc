@@ -3,6 +3,7 @@
         <file alias="stop.svg">res/icons/stop.svg</file>
         <file alias="location.svg">res/icons/location.svg</file>
         <file alias="radar.svg">res/icons/radar.svg</file>
+        <file alias="terminal.svg">res/icons/terminal.svg</file>
         <file alias="dropstrike.png">res/icons/dropstrike.png</file>
         <file>res/icons/dropstrike.ico</file>
         <file>res/icons/macx.icns</file>

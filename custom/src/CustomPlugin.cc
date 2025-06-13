@@ -83,3 +83,50 @@ void CustomPlugin::emergencyStop()
                             NAN,
                             NAN);
 }
+
+void CustomPlugin::sendUdpCommand(const QString& ip, int port, const QString& message) {
+    if (!_udpSocket) {
+        _udpSocket = new QUdpSocket(this);
+        if (!_udpSocket->bind(QHostAddress::AnyIPv4, 6001)) {
+            qWarning() << "Failed to bind UDP socket:" << _udpSocket->errorString();
+            _udpSocket->deleteLater();
+            _udpSocket = nullptr;
+            return;
+        }
+
+        connect(_udpSocket, &QUdpSocket::readyRead, this, &CustomPlugin::onDataReceived);
+
+        connect(_udpSocket, &QUdpSocket::readyRead, this, [=]() {
+            
+        });
+    }
+
+    QHostAddress addr(ip);
+    if (addr.isNull()) {
+        qWarning() << "Invalid IP address:" << ip;
+        return;
+    }
+
+    QByteArray datagram = message.toUtf8();
+    qint64 bytesWritten = _udpSocket->writeDatagram(datagram, addr, port);
+    qDebug() << "Sending UDP to" << ip << ":" << port << "message:" << message << "datagram" << datagram;
+
+    if (bytesWritten == -1) {
+        qWarning() << "Failed to send datagram:" << _udpSocket->errorString();
+    } else {
+        qDebug() << "Sent" << bytesWritten << "bytes to" << ip << ":" << port;
+    }
+}
+
+void CustomPlugin::onDataReceived() {
+    while (_udpSocket->hasPendingDatagrams()) {
+        QByteArray buffer;
+        buffer.resize(_udpSocket->pendingDatagramSize());
+        _udpSocket->readDatagram(buffer.data(), buffer.size());
+
+        QJsonObject obj = QJsonDocument::fromJson(buffer).object();
+        QString cmd = obj["cmd"].toString();
+        QString output = obj["output"].toString();
+        emit cmdOutput(cmd, output);
+    }
+}

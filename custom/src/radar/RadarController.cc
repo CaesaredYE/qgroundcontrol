@@ -51,6 +51,7 @@ void RadarController::connectRadar() {
 
     _udpSocket = new QUdpSocket(this);
     if (!_udpSocket->bind(QHostAddress::AnyIPv4, _localPort)) {
+        qWarning() << "Failed to bind UDP socket:" << _udpSocket->errorString();
         _udpSocket->deleteLater();
         _udpSocket = nullptr;
         return;

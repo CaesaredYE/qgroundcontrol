@@ -35,16 +35,10 @@ def run_script_realtime(cmd, script_path, addr):
                     "output": line.strip()
                 }).encode(), addr)
 
-            returncode = proc.wait()
-            sock.sendto(json.dumps({
-                "cmd": cmd,
-                "status": "done",
-                "exit_code": returncode
-            }).encode(), addr)
+            proc.wait()
 
     except Exception as e:
         logging.error(f"[ERROR]{cmd}.sh -> {e}")
-
 
 while True:
     data, addr = sock.recvfrom(1024)
