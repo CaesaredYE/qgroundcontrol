@@ -61,19 +61,22 @@ Rectangle {
                     QGCLabel { text: qsTr("IP") }
                     FactTextField {
                         fact:                   radarSettings.ip
+                        enabled:                !radarController.isConnected
                         Layout.fillWidth:       true
                     }
 
                     QGCLabel { text: qsTr("Port") }
                     FactTextField {
                         fact:                   radarSettings.port
+                        enabled:                !radarController.isConnected
                         Layout.fillWidth:       true
                     }
 
 
                     QGCLabel { text: qsTr("本机Port") }
                     FactTextField {
-                        fact:                  radarSettings.localPort
+                        fact:                   radarSettings.localPort
+                        enabled:                !radarController.isConnected
                         Layout.fillWidth:       true
                     }
 
