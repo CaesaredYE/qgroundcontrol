@@ -87,29 +87,26 @@ void CustomPlugin::emergencyStop()
 void CustomPlugin::sendUdpCommand(const QString& ip, int port, const QString& message) {
     if (!_udpSocket) {
         _udpSocket = new QUdpSocket(this);
-        if (!_udpSocket->bind(QHostAddress::AnyIPv4, 6001)) {
-            qWarning() << "Failed to bind UDP socket:" << _udpSocket->errorString();
+        if (!_udpSocket->bind(QHostAddress::AnyIPv4, 6001, QAbstractSocket::ReuseAddressHint | QUdpSocket::ShareAddress)) {
+            qWarning() << "UDP bind failed on port 6001:" << _udpSocket->errorString();
+            _udpSocket->deleteLater();
+            _udpSocket = nullptr;
+            return;
+        }
+
+        if (!_udpSocket->isValid()) {
+            qWarning() << "UDP socket is not valid.";
             _udpSocket->deleteLater();
             _udpSocket = nullptr;
             return;
         }
 
         connect(_udpSocket, &QUdpSocket::readyRead, this, &CustomPlugin::onDataReceived);
-
-        connect(_udpSocket, &QUdpSocket::readyRead, this, [=]() {
-            
-        });
-    }
-
-    QHostAddress addr(ip);
-    if (addr.isNull()) {
-        qWarning() << "Invalid IP address:" << ip;
-        return;
     }
 
     QByteArray datagram = message.toUtf8();
-    qint64 bytesWritten = _udpSocket->writeDatagram(datagram, addr, port);
-    qDebug() << "Sending UDP to" << ip << ":" << port;
+    qint64 bytesWritten = _udpSocket->writeDatagram(datagram, QHostAddress(ip), port);
+    qDebug() << "Trying to send UDP to" << ip << ":" << port;
 
     if (bytesWritten == -1) {
         qWarning() << "Failed to send datagram:" << _udpSocket->errorString();
