@@ -37,6 +37,7 @@ public:
     Q_INVOKABLE void startScan          ();
     Q_INVOKABLE void stopScan           ();
     Q_INVOKABLE void setTargetBatch     (quint32 batch);
+    Q_INVOKABLE void confirmTarget      ();
 
 signals:
     void trackListChanged               ();
@@ -66,4 +67,5 @@ private:
 
     bool _isConnected               = false;
     bool _isScanning                = false;
+    bool _isPlane                   = false;
 };

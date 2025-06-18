@@ -124,6 +124,12 @@ void RadarController::setTargetBatch(quint32 batch) {
     sendTrackToVehicle();
 }
 
+void RadarController::confirmTarget() {
+    _isPlane = !_isPlane;
+    sendTrackToVehicle();
+    qDebug() << "Set target is plane:" << _isPlane;
+}
+
 void RadarController::onDataReceived() {
     while (_udpSocket->hasPendingDatagrams()) {
         QByteArray datagram;
@@ -219,7 +225,7 @@ void RadarController::sendTrackToVehicle() {
                             MAV_CMD_USER_1,
                             false,
                             NAN,
-                            NAN,
+                            _isPlane == true ? 1 : 0,
                             target.batch,
                             target.existFlag,
                             target.lat,

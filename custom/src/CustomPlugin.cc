@@ -61,9 +61,9 @@ void CustomPlugin::sendTargetPosition(const QString& lat, const QString& lon, co
                                MAV_FRAME_GLOBAL,
                                false,
                                NAN,
-                               NAN,
-                               NAN,
-                               NAN,
+                               1,
+                               0,
+                               1,
                                lat.toDouble(),
                                lon.toDouble(),
                                alt.toFloat());

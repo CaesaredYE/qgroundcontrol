@@ -33,6 +33,7 @@ Item {
     property var radarSettings: QGroundControl.corePlugin.radarSettings
     property var mapCenter: null
     property var selectedTrack: null
+    property var targetBatch: null
 
     Component.onCompleted: updateMapCenter()
 
@@ -40,6 +41,7 @@ Item {
         target: radarSettings.latitude
         onValueChanged: updateMapCenter()
     }
+    
     Connections {
         target: radarSettings.longitude
         onValueChanged: updateMapCenter()
@@ -76,7 +78,7 @@ Item {
                     width: 20
                     height: 20
                     radius: targetRect.width / 2
-                    color: "red"
+                    color: targetBatch === modelData.batch ? "yellow" : "red"
                     border.color: "black"
                     border.width: 1
                     anchors.centerIn: parent
@@ -162,7 +164,8 @@ Item {
         sourceItem: QGCButton {
             text: "选为目标"
             onClicked: {
-                radarController.setTargetBatch(selectedTrack.batch)
+                targetBatch = selectedTrack.batch
+                radarController.setTargetBatch(targetBatch)
                 selectedTrack = null
             }
         }

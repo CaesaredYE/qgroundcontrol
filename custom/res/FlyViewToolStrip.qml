@@ -187,7 +187,7 @@ ToolStrip {
                     radius: 4
                     border.color: "#888"
                     Layout.fillWidth: true
-                    height: 100
+                    height: 150
 
                     ColumnLayout {
                         anchors.fill: parent
@@ -218,7 +218,7 @@ ToolStrip {
                     radius: 4
                     border.color: "#888"
                     Layout.fillWidth: true
-                    height: 100
+                    height: 150
 
                     ColumnLayout {
                         anchors.fill: parent
@@ -249,7 +249,7 @@ ToolStrip {
                     radius: 4
                     border.color: "#888"
                     Layout.fillWidth: true
-                    height: 100
+                    height: 150
 
                     ColumnLayout {
                         anchors.fill: parent
@@ -280,7 +280,7 @@ ToolStrip {
                     radius: 4
                     border.color: "#888"
                     Layout.fillWidth: true
-                    height: 100
+                    height: 150
 
                     ColumnLayout {
                         anchors.fill: parent
