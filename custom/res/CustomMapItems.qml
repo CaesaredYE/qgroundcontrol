@@ -1,3 +1,5 @@
+
+
 /****************************************************************************
  *
  * (c) 2009-2020 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
@@ -6,32 +8,31 @@
  * COPYING.md in the root of the source code directory.
  *
  ****************************************************************************/
+import QtQuick 2.11
+import QtQuick.Controls 2.4
+import QtLocation 5.3
+import QtPositioning 5.3
+import QtQuick.Dialogs 1.2
+import QtQuick.Layouts 1.11
 
-import QtQuick                      2.11
-import QtQuick.Controls             2.4
-import QtLocation                   5.3
-import QtPositioning                5.3
-import QtQuick.Dialogs              1.2
-import QtQuick.Layouts              1.11
-
-import QGroundControl               1.0
-import QGroundControl.Controllers   1.0
-import QGroundControl.Controls      1.0
+import QGroundControl 1.0
+import QGroundControl.Controllers 1.0
+import QGroundControl.Controls 1.0
 import QGroundControl.FlightDisplay 1.0
-import QGroundControl.FlightMap     1.0
-import QGroundControl.Palette       1.0
-import QGroundControl.ScreenTools   1.0
-import QGroundControl.Vehicle       1.0
+import QGroundControl.FlightMap 1.0
+import QGroundControl.Palette 1.0
+import QGroundControl.ScreenTools 1.0
+import QGroundControl.Vehicle 1.0
 
 Item {
     id: radar
-    property var    map
-    property bool   largeMapView
+    property var map
+    property bool largeMapView
 
-    property var    radarController:    QGroundControl.corePlugin.radarController
-    property var    radarSettings:      QGroundControl.corePlugin.radarSettings
-    property var    mapCenter:          null
-    property var    selectedTrack:      null
+    property var radarController: QGroundControl.corePlugin.radarController
+    property var radarSettings: QGroundControl.corePlugin.radarSettings
+    property var mapCenter: null
+    property var selectedTrack: null
 
     Component.onCompleted: updateMapCenter()
 
@@ -46,10 +47,8 @@ Item {
 
     function updateMapCenter() {
         if (radarSettings.latitude.value && radarSettings.longitude.value) {
-            mapCenter = QtPositioning.coordinate(
-                        radarSettings.latitude.value,
-                        radarSettings.longitude.value
-                        )
+            mapCenter = QtPositioning.coordinate(radarSettings.latitude.value,
+                                                 radarSettings.longitude.value)
 
             if (map) {
                 map.center = mapCenter
@@ -66,7 +65,7 @@ Item {
         visible: radarController.isScanning
         delegate: MapQuickItem {
             parent: map
-            visible:    modelData.existFlag === 1
+            visible: modelData.existFlag === 1
             coordinate: QtPositioning.coordinate(modelData.lat, modelData.lon)
             anchorPoint.x: targetRect.width / 2
             anchorPoint.y: targetRect.width / 2
@@ -87,10 +86,11 @@ Item {
                         anchors.fill: parent
                         hoverEnabled: true
                         onClicked: {
-                            if (selectedTrack != null && (selectedTrack.batch === modelData.batch)){
-                                selectedTrack = null;
+                            if (selectedTrack != null
+                                    && (selectedTrack.batch === modelData.batch)) {
+                                selectedTrack = null
                             } else {
-                                selectedTrack = modelData;
+                                selectedTrack = modelData
                             }
                         }
                     }
@@ -152,9 +152,10 @@ Item {
     MapQuickItem {
         parent: map
         visible: selectedTrack !== null
-        coordinate: selectedTrack !== null
-                    ? QtPositioning.coordinate(selectedTrack.lat, selectedTrack.lon)
-                    : QtPositioning.coordinate(0, 0)
+        coordinate: selectedTrack !== null ? QtPositioning.coordinate(
+                                                 selectedTrack.lat,
+                                                 selectedTrack.lon) : QtPositioning.coordinate(
+                                                 0, 0)
         anchorPoint.x: 0
         anchorPoint.y: 40
         z: QGroundControl.zOrderWidgets
@@ -162,7 +163,7 @@ Item {
             text: "选为目标"
             onClicked: {
                 radarController.setTargetBatch(selectedTrack.batch)
-                selectedTrack = null;
+                selectedTrack = null
             }
         }
     }
@@ -185,7 +186,8 @@ Item {
     // 雷达扫描效果
     MapQuickItem {
         parent: map
-        coordinate: mapCenter !== null ? mapCenter : QtPositioning.coordinate(0, 0)
+        coordinate: mapCenter !== null ? mapCenter : QtPositioning.coordinate(
+                                             0, 0)
         anchorPoint.x: radarScan.width / 2
         anchorPoint.y: radarScan.height / 2
         visible: mapCenter !== null && radarController.isScanning
@@ -202,39 +204,41 @@ Item {
                 property real rotationAngle: 0
 
                 onPaint: {
-                    var ctx = getContext("2d");
-                    ctx.clearRect(0, 0, width, height);
+                    var ctx = getContext("2d")
+                    ctx.clearRect(0, 0, width, height)
 
-                    ctx.save();
-                    ctx.translate(width / 2, height / 2);
+                    ctx.save()
+                    ctx.translate(width / 2, height / 2)
 
                     // === 1. 绘制同心圆 ===
-                    ctx.strokeStyle = "rgba(255, 0, 0, 0.9)";
-                    ctx.lineWidth = 1;
-                    var ringCount = 4; // 同心圆数量
-                    var maxRadius = width / 2;
+                    ctx.strokeStyle = "rgba(255, 0, 0, 0.9)"
+                    ctx.lineWidth = 1
+                    var ringCount = 4
+                    // 同心圆数量
+                    var maxRadius = width / 2
                     for (var i = 1; i <= ringCount; i++) {
-                        var radius = (i / ringCount) * maxRadius;
-                        ctx.beginPath();
-                        ctx.arc(0, 0, radius, 0, 2 * Math.PI);
-                        ctx.stroke();
+                        var radius = (i / ringCount) * maxRadius
+                        ctx.beginPath()
+                        ctx.arc(0, 0, radius, 0, 2 * Math.PI)
+                        ctx.stroke()
                     }
 
                     // === 2. 绘制旋转扇形 ===
-                    ctx.rotate(rotationAngle * Math.PI / 180);
+                    ctx.rotate(rotationAngle * Math.PI / 180)
 
-                    var gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, maxRadius);
-                    gradient.addColorStop(0, "rgba(0, 255, 0, 0.7)");
-                    gradient.addColorStop(1, "rgba(0, 255, 0, 0)");
+                    var gradient = ctx.createRadialGradient(0, 0, 0, 0, 0,
+                                                            maxRadius)
+                    gradient.addColorStop(0, "rgba(0, 255, 0, 0.7)")
+                    gradient.addColorStop(1, "rgba(0, 255, 0, 0)")
 
-                    ctx.beginPath();
-                    ctx.moveTo(0, 0);
-                    ctx.arc(0, 0, maxRadius, 0, sweepAngle * Math.PI / 180);
-                    ctx.closePath();
-                    ctx.fillStyle = gradient;
-                    ctx.fill();
+                    ctx.beginPath()
+                    ctx.moveTo(0, 0)
+                    ctx.arc(0, 0, maxRadius, 0, sweepAngle * Math.PI / 180)
+                    ctx.closePath()
+                    ctx.fillStyle = gradient
+                    ctx.fill()
 
-                    ctx.restore();
+                    ctx.restore()
                 }
 
                 Timer {
@@ -242,10 +246,10 @@ Item {
                     running: true
                     repeat: true
                     onTriggered: {
-                        radarCanvas.rotationAngle += 1;
+                        radarCanvas.rotationAngle += 1
                         if (radarCanvas.rotationAngle >= 360)
-                            radarCanvas.rotationAngle = 0;
-                        radarCanvas.requestPaint();
+                            radarCanvas.rotationAngle = 0
+                        radarCanvas.requestPaint()
                     }
                 }
             }

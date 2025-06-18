@@ -1,3 +1,5 @@
+
+
 /****************************************************************************
  *
  * (c) 2009-2020 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
@@ -6,21 +8,20 @@
  * COPYING.md in the root of the source code directory.
  *
  ****************************************************************************/
-
-import QtQuick                  2.11
-import QtQuick.Layouts          1.11
-import QtQuick.Dialogs          1.2
+import QtQuick 2.11
+import QtQuick.Layouts 1.11
+import QtQuick.Dialogs 1.2
 
 import QtQml.Models 2.12
 
-import QGroundControl               1.0
-import QGroundControl.Controls      1.0
-import QGroundControl.ScreenTools   1.0
+import QGroundControl 1.0
+import QGroundControl.Controls 1.0
+import QGroundControl.ScreenTools 1.0
 import QGroundControl.FlightDisplay 1.0
 
 ToolStrip {
-    id:     _root
-    title:  qsTr("Fly")
+    id: _root
+    title: qsTr("Fly")
 
     signal displayPreFlightChecklist
 
@@ -43,29 +44,41 @@ ToolStrip {
 
         QGCPopupDialog {
             title: qsTr("敌机坐标")
-            buttons:    StandardButton.Close
+            buttons: StandardButton.Close
 
             ColumnLayout {
                 GridLayout {
-                    columnSpacing:  ScreenTools.defaultFontPixelWidth
-                    rowSpacing:  ScreenTools.defaultFontPixelWidth
+                    columnSpacing: ScreenTools.defaultFontPixelWidth
+                    rowSpacing: ScreenTools.defaultFontPixelWidth
                     columns: 2
 
-                    QGCLabel { text: qsTr("纬度") }
-                    QGCTextField { id: lat}
+                    QGCLabel {
+                        text: qsTr("纬度")
+                    }
+                    QGCTextField {
+                        id: lat
+                    }
 
-                    QGCLabel { text: qsTr("经度") }
-                    QGCTextField { id: lon }
+                    QGCLabel {
+                        text: qsTr("经度")
+                    }
+                    QGCTextField {
+                        id: lon
+                    }
 
-                    QGCLabel { text: qsTr("高度") }
-                    QGCTextField { id: alt }
-
+                    QGCLabel {
+                        text: qsTr("高度")
+                    }
+                    QGCTextField {
+                        id: alt
+                    }
                     QGCButton {
                         text: qsTr("发送")
-                        Layout.alignment:   Qt.AlignRight
-                        Layout.columnSpan:  2
+                        Layout.alignment: Qt.AlignRight
+                        Layout.columnSpan: 2
                         onClicked: {
-                            QGroundControl.corePlugin.sendTargetPosition(lat.text, lon.text, alt.text);
+                            QGroundControl.corePlugin.sendTargetPosition(
+                                        lat.text, lon.text, alt.text)
                         }
                     }
                 }
@@ -78,13 +91,13 @@ ToolStrip {
 
         QGCPopupDialog {
             title: qsTr("启动")
-            buttons:    StandardButton.Close
+            buttons: StandardButton.Close
 
             property var outputs: ({
-                                       ros: [],
-                                       imageDetect: [],
-                                       intercept: [],
-                                       check: [],
+                                       "ros": [],
+                                       "imageDetect": [],
+                                       "intercept": [],
+                                       "check": []
                                    })
 
             Connections {
@@ -96,10 +109,12 @@ ToolStrip {
 
             function startModule(cmd) {
                 let message = {
-                    type: "exec",
-                    cmd
+                    "type": "exec",
+                    "cmd": cmd
                 }
-                QGroundControl.corePlugin.sendUdpCommand(ipField.text, parseInt(portField.text), JSON.stringify(message))
+                QGroundControl.corePlugin.sendUdpCommand(
+                            ipField.text, parseInt(portField.text),
+                            JSON.stringify(message))
                 outputs[cmd] = []
                 updateOutputs()
             }
@@ -118,17 +133,27 @@ ToolStrip {
 
             ColumnLayout {
                 spacing: ScreenTools.defaultFontPixelHeight
+                width: 800
 
                 GridLayout {
                     columns: 2
-                    QGCLabel { text: qsTr("IP 地址") }
-                    QGCTextField { id: ipField; text: "" }
+                    QGCLabel {
+                        text: qsTr("IP 地址")
+                    }
+                    QGCTextField {
+                        id: ipField
+                        text: ""
+                    }
 
-                    QGCLabel { text: qsTr("端口") }
-                    QGCTextField { id: portField; text: "6000" }
+                    QGCLabel {
+                        text: qsTr("端口")
+                    }
+                    QGCTextField {
+                        id: portField
+                        text: "6000"
+                    }
                 }
 
-                // 启动按钮
                 RowLayout {
                     spacing: ScreenTools.defaultFontPixelWidth
 
@@ -158,14 +183,21 @@ ToolStrip {
                 }
 
                 Rectangle {
-                    color: "#222"; radius: 4; border.color: "#888"
-                    Layout.fillWidth: true; height: 100
+                    color: "#222"
+                    radius: 4
+                    border.color: "#888"
+                    Layout.fillWidth: true
+                    height: 100
 
                     ColumnLayout {
                         anchors.fill: parent
                         spacing: 4
 
-                        QGCLabel { text: qsTr(" ROS输出"); font.bold: true; color: "white" }
+                        QGCLabel {
+                            text: qsTr(" ROS输出")
+                            font.bold: true
+                            color: "white"
+                        }
                         Flickable {
                             Layout.fillWidth: true
                             Layout.fillHeight: true
@@ -174,6 +206,7 @@ ToolStrip {
 
                             QGCLabel {
                                 id: rosOutput
+                                width: parent.width
                                 wrapMode: Text.Wrap
                             }
                         }
@@ -181,13 +214,21 @@ ToolStrip {
                 }
 
                 Rectangle {
-                    color: "#222"; radius: 4; border.color: "#888"
-                    Layout.fillWidth: true; height: 100
+                    color: "#222"
+                    radius: 4
+                    border.color: "#888"
+                    Layout.fillWidth: true
+                    height: 100
 
                     ColumnLayout {
-                        anchors.fill: parent; spacing: 4
-                        
-                        QGCLabel { text: qsTr(" 图像检测输出"); font.bold: true; color: "white" }
+                        anchors.fill: parent
+                        spacing: 4
+
+                        QGCLabel {
+                            text: qsTr(" 图像检测输出")
+                            font.bold: true
+                            color: "white"
+                        }
                         Flickable {
                             Layout.fillWidth: true
                             Layout.fillHeight: true
@@ -196,6 +237,7 @@ ToolStrip {
 
                             QGCLabel {
                                 id: imageDetectOutput
+                                width: parent.width
                                 wrapMode: Text.Wrap
                             }
                         }
@@ -203,13 +245,21 @@ ToolStrip {
                 }
 
                 Rectangle {
-                    color: "#222"; radius: 4; border.color: "#888"
-                    Layout.fillWidth: true; height: 100
+                    color: "#222"
+                    radius: 4
+                    border.color: "#888"
+                    Layout.fillWidth: true
+                    height: 100
 
                     ColumnLayout {
-                        anchors.fill: parent; spacing: 4
+                        anchors.fill: parent
+                        spacing: 4
 
-                        QGCLabel { text: qsTr(" 拦截主程序输出"); font.bold: true; color: "white" }
+                        QGCLabel {
+                            text: qsTr(" 拦截主程序输出")
+                            font.bold: true
+                            color: "white"
+                        }
                         Flickable {
                             Layout.fillWidth: true
                             Layout.fillHeight: true
@@ -218,6 +268,7 @@ ToolStrip {
 
                             QGCLabel {
                                 id: interceptOutput
+                                width: parent.width
                                 wrapMode: Text.Wrap
                             }
                         }
@@ -225,13 +276,21 @@ ToolStrip {
                 }
 
                 Rectangle {
-                    color: "#222"; radius: 4; border.color: "#888"
-                    Layout.fillWidth: true; height: 100
+                    color: "#222"
+                    radius: 4
+                    border.color: "#888"
+                    Layout.fillWidth: true
+                    height: 100
 
                     ColumnLayout {
-                        anchors.fill: parent; spacing: 4
+                        anchors.fill: parent
+                        spacing: 4
 
-                        QGCLabel { text: qsTr(" 飞机自检输出"); font.bold: true; color: "white" }
+                        QGCLabel {
+                            text: qsTr(" 飞机自检输出")
+                            font.bold: true
+                            color: "white"
+                        }
                         Flickable {
                             Layout.fillWidth: true
                             Layout.fillHeight: true
@@ -240,6 +299,7 @@ ToolStrip {
 
                             QGCLabel {
                                 id: checkOutput
+                                width: parent.width
                                 wrapMode: Text.Wrap
                             }
                         }

@@ -45,6 +45,7 @@ while True:
     print(data, addr)
     
     cmd = None
+    script_file = ""
     try:
         msg = json.loads(data.decode())
         if msg.get("type") == "exec":
@@ -53,7 +54,16 @@ while True:
             if not cmd:
                 continue
 
-            script_file = f"./{cmd}.sh"
+            if cmd == 'ros':
+                script_file = "./start_ros.sh"
+            elif cmd == 'imageDetect':
+                script_file = "./detect.sh"
+            elif cmd == 'intercept':
+                script_file = "./detect.sh"
+            elif cmd == 'check':
+                script_file = "./detect.sh"
+            else:
+                continue
 
             if not os.path.isfile(script_file):
                 logging.error(f"找不到文件: {script_file}")
