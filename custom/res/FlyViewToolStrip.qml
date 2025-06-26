@@ -25,6 +25,16 @@ ToolStrip {
 
     signal displayPreFlightChecklist
 
+    property var startupDialog: null
+
+    function openStartupDialog() {
+        if (!startupDialog) {
+            startupDialog = startup.createObject(mainWindow)
+        }
+
+        startupDialog.open()
+    }
+
     FlyViewToolStripActionList {
         id: flyViewToolStripActionList
 
@@ -32,9 +42,7 @@ ToolStrip {
         onShowLocationDialog: {
             sendLocation.createObject(mainWindow).open()
         }
-        onShowStartupDialog: {
-            startup.createObject(mainWindow).open()
-        }
+        onShowStartupDialog: openStartupDialog()
     }
 
     model: flyViewToolStripActionList.model
@@ -92,6 +100,7 @@ ToolStrip {
         QGCPopupDialog {
             title: qsTr("启动")
             buttons: StandardButton.Close
+            destroyOnClose: false
 
             property var outputs: ({
                                        "ros": [],
