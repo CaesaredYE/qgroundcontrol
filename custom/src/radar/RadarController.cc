@@ -44,19 +44,19 @@ void RadarController::connectRadar() {
         return;
     }
 
+    _remoteHost = QHostAddress(_radarSettings->ip()->rawValue().toString());
+    _remotePort = _radarSettings->port()->rawValue().toUInt();
+    _localPort  = _radarSettings->localPort()->rawValue().toUInt();
+
     _udpSocket = new QUdpSocket(this);
     if (!_udpSocket->bind(QHostAddress::AnyIPv4, _localPort, QAbstractSocket::ReuseAddressHint | QUdpSocket::ShareAddress)) {
-        qWarning() << "Failed to bind UDP socket:" << _udpSocket->errorString();
+        qWarning() << "Failed to bind UDP socket:" << _udpSocket->errorString() << _localPort;
         _udpSocket->deleteLater();
         _udpSocket = nullptr;
         return;
     }
 
     connect(_udpSocket, &QUdpSocket::readyRead, this, &RadarController::onDataReceived);
-
-    _remoteHost = QHostAddress(_radarSettings->ip()->rawValue().toString());
-    _remotePort = _radarSettings->port()->rawValue().toUInt();
-    _localPort  = _radarSettings->localPort()->rawValue().toUInt();
 
     _isConnected = true;
     emit isConnectedChanged();
