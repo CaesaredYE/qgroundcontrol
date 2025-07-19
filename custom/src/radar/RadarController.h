@@ -1,23 +1,12 @@
 ﻿#pragma once
 
 #include <QObject>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
 #include <QUdpSocket>
 #include <QGeoCoordinate>
 #include "RadarSettings.h" 
-
-struct TrackInfo {
-    quint32 batch;      // 批号
-    quint16 existFlag;  // 存在标识
-
-    float compass;      // 方位
-    float distance;     // 距离
-    float course;       // 航向
-    float speed;        // 航速
-    
-    float lat;          // 纬度
-    float lon;          // 经度
-    float alt;          // 高度
-};
 
 class RadarController : public QObject {
     Q_OBJECT
@@ -35,7 +24,7 @@ public:
     Q_INVOKABLE void connectRadar       ();
     Q_INVOKABLE void disconnectRadar    ();
     Q_INVOKABLE void startScan          ();
-    Q_INVOKABLE void stopScan           ();
+    Q_INVOKABLE void stopScan           (); 
     Q_INVOKABLE void setTargetBatch     (quint32 batch);
     Q_INVOKABLE void confirmTarget      ();
 
@@ -44,25 +33,22 @@ signals:
     void isConnectedChanged             ();
     void isScanningChanged              ();
 
-private slots:
+private slots:  
     void onDataReceived                 ();
 
 private:
-    void startHeartbeat                 ();
-    void stopHeartbeat                  ();
-    void sendData                       (const uint8_t* data, int length);
     void sendTrackToVehicle             ();
+    void convertEcefToLla              (double x, double y, double z, double& lat, double& lon, double& alt);
 
 private:
     QUdpSocket* _udpSocket          = nullptr;
-    QTimer* _heartbeatTimer         = nullptr;
     RadarSettings* _radarSettings   = nullptr; 
 
     QHostAddress _remoteHost;
     quint16 _remotePort;
     quint16 _localPort;
 
-    QMap<quint32, TrackInfo> _tracks;
+    QMap<quint32, QJsonObject> _tracks;
     quint32 _targetBatch            = 0;
 
     bool _isConnected               = false;

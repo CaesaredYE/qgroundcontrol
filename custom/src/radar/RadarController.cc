@@ -20,21 +20,8 @@ RadarController::RadarController(RadarSettings* radarSettings,  QObject* parent)
 
 QVariantList RadarController::trackList() const {
     QVariantList list;
-    for (const auto& t : _tracks) {
-        QVariantMap map;
-        map["batch"]        = t.batch;
-        map["existFlag"]    = t.existFlag;
-
-        map["compass"]  = QString::number(t.compass);
-        map["distance"] = QString::number(t.distance);
-        map["course"]   = QString::number(t.course);
-        map["speed"]    = QString::number(t.speed);
-
-        map["lat"]      = QString::number(t.lat);
-        map["lon"]      = QString::number(t.lon);
-        map["alt"]      = QString::number(t.alt);
-
-        list.append(map);
+    for (const QJsonObject& t : _tracks) {
+        list.append(t);
     }
     return list;
 }
@@ -78,44 +65,15 @@ void RadarController::disconnectRadar() {
 }
 
 void RadarController::startScan() {
-    startHeartbeat();
-
-    const uint8_t data[] = {
-        0xaa, 0xaa, 0xaa, 0xaa,
-        0x0b, 0x00, 0x00, 0x00,
-        0x15, 0x01, 0x00, 0xff,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0xff, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00
-    };
-
-    sendData(data, sizeof(data));
-
     _isScanning = true;
     emit isScanningChanged();
 }
 
 void RadarController::stopScan()
 {
-    const uint8_t data[] = {
-        0xaa, 0xaa, 0xaa, 0xaa,
-        0x0b, 0x00, 0x00, 0x00,
-        0x15, 0x01, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00
-    };
-
-    sendData(data, sizeof(data));
-
+    _tracks.clear();
     _isScanning = false;
     emit isScanningChanged();
-
-    stopHeartbeat();
 }
 
 void RadarController::setTargetBatch(quint32 batch) {
@@ -130,6 +88,32 @@ void RadarController::confirmTarget() {
     qDebug() << "Set target is plane:" << _isPlane;
 }
 
+void RadarController::sendTrackToVehicle() {
+    if (_targetBatch == 0 || !_tracks.contains(_targetBatch)) {
+        return;
+    }
+
+    const QJsonObject& target = _tracks[_targetBatch];
+
+    Vehicle* vehicle = qgcApp()->toolbox()->multiVehicleManager()->activeVehicle();
+    if (!vehicle) {
+        return;
+    }
+
+    qDebug() << "Send track to vehicle: batch" << target["batch"] << "lat" << target["lat"] << "lon" << target["lon"] << "alt" << target["alt"];
+
+    vehicle->sendMavCommand(MAV_COMP_ID_UDP_BRIDGE,
+                            MAV_CMD_USER_1,
+                            false,
+                            NAN,
+                            _isPlane == true ? 1 : 0,
+                            target["batch"].toDouble(),
+                            target["guid_status"].toDouble(),
+                            target["lat"].toDouble(),
+                            target["lon"].toDouble(), 
+                            target["alt"].toDouble());
+}
+
 void RadarController::onDataReceived() {
     while (_udpSocket->hasPendingDatagrams()) {
         QByteArray datagram;
@@ -138,97 +122,135 @@ void RadarController::onDataReceived() {
 
         if (bytesRead == -1) {
             qWarning() << "receive fail:" << _udpSocket->errorString();
+            continue;
         }
 
-        // 航迹报文
-        if (datagram.size() >= 56 && datagram.constData()[4] == 0x01) {
-            quint16 trackCount;
-            memcpy(&trackCount, datagram.constData() + 8, sizeof(quint16));
+        if(!_isScanning){
+            continue;
+        }
 
-            for (int i = 0; i < trackCount; ++i) {
-                int offset =  i * 80;
+        if (datagram.size() < 32) {
+            qWarning() << "datagram too small:" << datagram.size();
+            continue;
+        }
 
-                TrackInfo info {};
-                memcpy(&info.batch, datagram.constData() + 12 + offset, sizeof(quint32));
-                memcpy(&info.existFlag, datagram.constData() + 36 + offset, sizeof(quint16));
+        quint16 messageId;
+        memcpy(&messageId, datagram.constData() + 0, sizeof(quint16));
+        qDebug() << "Message ID:" << QString::number(messageId, 16);
 
-                memcpy(&info.compass, datagram.constData() + 16 + offset, sizeof(float));
-                memcpy(&info.distance, datagram.constData() + 20 + offset, sizeof(float));
-                memcpy(&info.course, datagram.constData() + 44 + offset, sizeof(float));
-                memcpy(&info.speed, datagram.constData() + 48 + offset, sizeof(float));
+        if (messageId != 0x7104) {
+            continue;
+        }
+        
+        quint16 bodyInfo;
+        memcpy(&bodyInfo, datagram.constData() + 28, sizeof(quint16)); 
+        quint16 bodyType = (bodyInfo >> 12) & 0x0F;
+        quint16 bodyLength = bodyInfo & 0x0FFF;
+        qDebug() << "Body Type:" << bodyType ;
+        qDebug() << "Body Length:" << bodyLength;
 
-                memcpy(&info.lat, datagram.constData() + 24 + offset, sizeof(float));
-                memcpy(&info.lon, datagram.constData() + 28 + offset, sizeof(float));
-                memcpy(&info.alt, datagram.constData() + 52 + offset, sizeof(float));
+        if (bodyType != 0) {
+            qDebug() << "Skip non-JSON format, body type:" << bodyType;
+            continue;
+        }
 
-                _tracks[info.batch] = info;
+        if (bodyLength == 0) {
+            qDebug() << "Body length is 0";
+            continue;
+        }
 
-                qDebug() << "收到雷达消息; 批号" << info.batch << "纬度" << info.lat  << "经度" << info.lon << "高度" << info.alt << "存在标识" << info.existFlag;
+        quint16 bodyCount;
+        memcpy(&bodyCount, datagram.constData() + 30, sizeof(quint16)); 
+        qDebug() << "Body Count:" << bodyCount;
+        
+        int bodyStart = 32;
+        for (int i = 0; i < bodyCount; ++i) {
+            if (bodyStart + bodyLength > datagram.size()) {
+                qWarning() << "Body data exceeds datagram size";
+                continue;
+            }
+            
+            QByteArray jsonData = datagram.mid(bodyStart, bodyLength);
+            qDebug() << "JSON body" << i << ":" << jsonData;
+            
+            QJsonParseError parseError;
+            QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData, &parseError);
+            
+            if (parseError.error != QJsonParseError::NoError) {
+                qWarning() << "JSON parse error:" << parseError.errorString();
+                bodyStart += bodyLength;
+                continue;
+            }
+            
+            if (jsonDoc.isObject()) {
+                QJsonObject jsonObj = jsonDoc.object();
 
-                if (_targetBatch && info.batch == _targetBatch) {
+                quint32 batch = jsonObj["tar_id"].toVariant().toUInt();
+                jsonObj["batch"] = QJsonValue(static_cast<qint64>(batch));
+                
+                double x = jsonObj["ecef_x"].toDouble();
+                double y = jsonObj["ecef_y"].toDouble();
+                double z = jsonObj["ecef_z"].toDouble();
+                
+                double lat, lon, alt;
+                convertEcefToLla(x, y, z, lat, lon, alt);
+                
+                jsonObj["lat"] = lat;
+                jsonObj["lon"] = lon;
+                jsonObj["alt"] = alt;
+                
+                qDebug() << "ECEF to LLA conversion:";
+                qDebug() << "  ECEF (x,y,z):" << x << y << z;
+                qDebug() << "  LLA (lat,lon,alt):" << lat << lon << alt;
+
+                _tracks[batch] = jsonObj;
+
+                if (_targetBatch && batch == _targetBatch) {
                     sendTrackToVehicle();
                 }
+                
+                emit trackListChanged();
             }
-
-            emit trackListChanged();
+            
+            bodyStart += bodyLength;
         }
+
     }
 }
 
-void RadarController::startHeartbeat() {
-    if (_heartbeatTimer) {
-        return;
+void RadarController::convertEcefToLla(double x, double y, double z, double& lat, double& lon, double& alt) {
+    // CGCS2000椭球体参数 (与WGS84相同)
+    const double a = 6378137.0;        // 长半轴 (米)
+    const double f = 1.0 / 298.257222101;  // 扁率 (CGCS2000)
+    const double e2 = 2.0 * f - f * f; // 第一偏心率平方
+    
+    // 计算经度
+    lon = qAtan2(y, x);
+    
+    // 计算纬度 (迭代方法)
+    double p = qSqrt(x * x + y * y);
+    double lat_prev = qAtan2(z, p * (1.0 - e2));
+    
+    for (int i = 0; i < 10; ++i) {
+        double sin_lat = qSin(lat_prev);
+        double N = a / qSqrt(1.0 - e2 * sin_lat * sin_lat);
+        double lat_new = qAtan2(z + e2 * N * sin_lat, p);
+        
+        if (qAbs(lat_new - lat_prev) < 1e-12) {
+            lat = lat_new;
+            break;
+        }
+        lat_prev = lat_new;
     }
-
-    const uint8_t data[] = {0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0xAA};
-    sendData(data, sizeof(data));
-
-    _heartbeatTimer = new QTimer(this);
-    connect(_heartbeatTimer, &QTimer::timeout, this, [=]() {
-        sendData(data, sizeof(data));
-    });
-    _heartbeatTimer->start(60 * 1000);
+    lat = lat_prev;
+    
+    // 计算高度
+    double sin_lat = qSin(lat);
+    double N = a / qSqrt(1.0 - e2 * sin_lat * sin_lat);
+    alt = p / qCos(lat) - N;
+    
+    // 转换为度
+    lat = lat * 180.0 / M_PI;
+    lon = lon * 180.0 / M_PI;
 }
 
-void RadarController::stopHeartbeat() {
-    if (_heartbeatTimer) {
-        _heartbeatTimer->stop();
-        _heartbeatTimer->deleteLater();
-        _heartbeatTimer = nullptr;
-    }
-}
-
-void RadarController::sendData(const uint8_t* data, int length) {
-    if (!_udpSocket) {
-        return;
-    }
-    qDebug() << "Sending UDP to" << _remoteHost << ":" << _remotePort;
-    QByteArray byteArray(reinterpret_cast<const char*>(data), length);
-    _udpSocket->writeDatagram(byteArray, _remoteHost, _remotePort);
-}
-
-void RadarController::sendTrackToVehicle() {
-    if (_targetBatch == 0 || !_tracks.contains(_targetBatch)) {
-        return;
-    }
-
-    const TrackInfo& target = _tracks[_targetBatch];
-
-    Vehicle* vehicle = qgcApp()->toolbox()->multiVehicleManager()->activeVehicle();
-    if (!vehicle) {
-        return;
-    }
-
-    qDebug() << "Send track to vehicle: batch" << target.batch << "lat" << target.lat << "lon" << target.lon << "alt" << target.alt;
-
-    vehicle->sendMavCommand(MAV_COMP_ID_UDP_BRIDGE,
-                            MAV_CMD_USER_1,
-                            false,
-                            NAN,
-                            _isPlane == true ? 1 : 0,
-                            target.batch,
-                            target.existFlag,
-                            target.lat,
-                            target.lon,
-                            target.alt);
-}

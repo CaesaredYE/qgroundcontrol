@@ -41,7 +41,7 @@ Item {
         target: radarSettings.latitude
         onValueChanged: updateMapCenter()
     }
-    
+
     Connections {
         target: radarSettings.longitude
         onValueChanged: updateMapCenter()
@@ -67,7 +67,6 @@ Item {
         visible: radarController.isScanning
         delegate: MapQuickItem {
             parent: map
-            visible: modelData.existFlag === 1
             coordinate: QtPositioning.coordinate(modelData.lat, modelData.lon)
             anchorPoint.x: targetRect.width / 2
             anchorPoint.y: targetRect.width / 2
@@ -118,19 +117,27 @@ Item {
 
                         Text {
                             color: "white"
-                            text: "方位: " + modelData.compass
+                            text: "地心坐标x: " + modelData.ecef_x
                         }
                         Text {
                             color: "white"
-                            text: "距离: " + modelData.distance
+                            text: "地心坐标y: " + modelData.ecef_y
                         }
                         Text {
                             color: "white"
-                            text: "航向: " + modelData.course
+                            text: "地心坐标z: " + modelData.ecef_z
                         }
                         Text {
                             color: "white"
-                            text: "航速: " + modelData.speed
+                            text: "速度x: " + modelData.ecef_vx
+                        }
+                        Text {
+                            color: "white"
+                            text: "速度y: " + modelData.ecef_vy
+                        }
+                        Text {
+                            color: "white"
+                            text: "速度z: " + modelData.ecef_vz
                         }
                         Text {
                             color: "white"
