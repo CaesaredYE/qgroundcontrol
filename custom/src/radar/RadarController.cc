@@ -105,13 +105,13 @@ void RadarController::sendTrackToVehicle() {
     vehicle->sendMavCommand(MAV_COMP_ID_UDP_BRIDGE,
                             MAV_CMD_USER_1,
                             false,
-                            NAN,
                             _isPlane == true ? 1 : 0,
-                            target["batch"].toDouble(),
-                            target["guid_status"].toDouble(),
                             target["lat"].toDouble(),
                             target["lon"].toDouble(), 
-                            target["alt"].toDouble());
+                            target["alt"].toDouble(),
+                            target["ecef_vx"].toDouble(),
+                            target["ecef_vy"].toDouble(),
+                            target["ecef_vz"].toDouble());
 }
 
 void RadarController::onDataReceived() {
@@ -188,17 +188,17 @@ void RadarController::onDataReceived() {
                 quint32 batch = jsonObj["tar_id"].toVariant().toUInt();
                 jsonObj["batch"] = QJsonValue(static_cast<qint64>(batch));
                 
-                double x = jsonObj["ecef_x"].toDouble();
-                double y = jsonObj["ecef_y"].toDouble();
-                double z = jsonObj["ecef_z"].toDouble();
+                float x = jsonObj["ecef_x"].toDouble();
+                float y = jsonObj["ecef_y"].toDouble();
+                float z = jsonObj["ecef_z"].toDouble();
                 
-                double lat, lon, alt;
+                float lat, lon, alt;
                 convertEcefToLla(x, y, z, lat, lon, alt);
-                
+
                 jsonObj["lat"] = lat;
                 jsonObj["lon"] = lon;
                 jsonObj["alt"] = alt;
-                
+
                 qDebug() << "ECEF to LLA conversion:";
                 qDebug() << "  ECEF (x,y,z):" << x << y << z;
                 qDebug() << "  LLA (lat,lon,alt):" << lat << lon << alt;
@@ -218,39 +218,39 @@ void RadarController::onDataReceived() {
     }
 }
 
-void RadarController::convertEcefToLla(double x, double y, double z, double& lat, double& lon, double& alt) {
+void RadarController::convertEcefToLla(float x, float y, float z, float& lat, float& lon, float& alt) {
     // CGCS2000椭球体参数 (与WGS84相同)
-    const double a = 6378137.0;        // 长半轴 (米)
-    const double f = 1.0 / 298.257222101;  // 扁率 (CGCS2000)
-    const double e2 = 2.0 * f - f * f; // 第一偏心率平方
-    
+    const float a = 6378137.0f;        // 长半轴 (米)
+    const float f = 1.0f / 298.257222101f;  // 扁率 (CGCS2000)
+    const float e2 = 2.0f * f - f * f; // 第一偏心率平方
+
     // 计算经度
     lon = qAtan2(y, x);
-    
+
     // 计算纬度 (迭代方法)
-    double p = qSqrt(x * x + y * y);
-    double lat_prev = qAtan2(z, p * (1.0 - e2));
-    
+    float p = qSqrt(x * x + y * y);
+    float lat_prev = qAtan2(z, p * (1.0f - e2));
+
     for (int i = 0; i < 10; ++i) {
-        double sin_lat = qSin(lat_prev);
-        double N = a / qSqrt(1.0 - e2 * sin_lat * sin_lat);
-        double lat_new = qAtan2(z + e2 * N * sin_lat, p);
-        
-        if (qAbs(lat_new - lat_prev) < 1e-12) {
+        float sin_lat = qSin(lat_prev);
+        float N = a / qSqrt(1.0f - e2 * sin_lat * sin_lat);
+        float lat_new = qAtan2(z + e2 * N * sin_lat, p);
+
+        if (qAbs(lat_new - lat_prev) < 1e-6f) {
             lat = lat_new;
             break;
         }
         lat_prev = lat_new;
     }
     lat = lat_prev;
-    
+
     // 计算高度
-    double sin_lat = qSin(lat);
-    double N = a / qSqrt(1.0 - e2 * sin_lat * sin_lat);
+    float sin_lat = qSin(lat);
+    float N = a / qSqrt(1.0f - e2 * sin_lat * sin_lat);
     alt = p / qCos(lat) - N;
-    
+
     // 转换为度
-    lat = lat * 180.0 / M_PI;
-    lon = lon * 180.0 / M_PI;
+    lat = lat * 180.0f / static_cast<float>(M_PI);
+    lon = lon * 180.0f / static_cast<float>(M_PI);
 }
 

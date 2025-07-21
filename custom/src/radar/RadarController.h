@@ -38,7 +38,7 @@ private slots:
 
 private:
     void sendTrackToVehicle             ();
-    void convertEcefToLla              (double x, double y, double z, double& lat, double& lon, double& alt);
+    void convertEcefToLla              (float x, float y, float z, float& lat, float& lon, float& alt);
 
 private:
     QUdpSocket* _udpSocket          = nullptr;
