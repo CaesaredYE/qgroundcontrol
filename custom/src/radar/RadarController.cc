@@ -100,18 +100,25 @@ void RadarController::sendTrackToVehicle() {
         return;
     }
 
-    qDebug() << "Send track to vehicle: batch" << target["batch"] << "lat" << target["lat"] << "lon" << target["lon"] << "alt" << target["alt"];
+    const double lat = target["lat"].toString().toDouble();
+    const double lon = target["lon"].toString().toDouble();
+    const double alt = target["alt"].toString().toDouble();
+    const double ecef_vx = target["ecef_vx"].toDouble();
+    const double ecef_vy = target["ecef_vy"].toDouble();
+    const double ecef_vz = target["ecef_vz"].toDouble();
+
+    qDebug() << "Send track to vehicle: batch" << _targetBatch << "isPlane" << _isPlane << "lat" << lat << "lon" << lon << "alt" << alt << "ecef_vx" << ecef_vx << "ecef_vy" << ecef_vy << "ecef_vz" << ecef_vz;
 
     vehicle->sendMavCommand(MAV_COMP_ID_UDP_BRIDGE,
                             MAV_CMD_USER_1,
                             false,
                             _isPlane == true ? 1 : 0,
-                            target["lat"].toDouble(),
-                            target["lon"].toDouble(), 
-                            target["alt"].toDouble(),
-                            target["ecef_vx"].toDouble(),
-                            target["ecef_vy"].toDouble(),
-                            target["ecef_vz"].toDouble());
+                            lat,
+                            lon, 
+                            alt,
+                            ecef_vx,
+                            ecef_vy,
+                            ecef_vz);
 }
 
 void RadarController::onDataReceived() {
